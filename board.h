@@ -1,5 +1,7 @@
 #include "piece.h"
 #include <array>
+#include <optional>
+#include <vector>
 
 class BoardObserver;
 
