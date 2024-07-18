@@ -18,6 +18,7 @@ public:
     Board();
 
     void clear();
+    void set_standard_position();
     BoardPosn get_king_posn(ChessColour colour) const;
 
     virtual std::optional<Piece> get_piece(int row, int col) const;
