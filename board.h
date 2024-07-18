@@ -31,3 +31,4 @@ public:
 private:
     std::array<std::array<std::optional<Piece>, 8>, 8> board;
 };
+
