@@ -67,7 +67,7 @@ public:
     void undo_last_move(Board& board);
 
 private:
-    std::vector<std::unique_ptr<Move>> moves;
+    std::vector<std::unique_ptr<Move>> _moves;
 
 };
 
@@ -75,6 +75,6 @@ class PossibleMove {
 public:
     bool is_possible_move(const BoardPosn& posn) const;
 private:
-    std::vector<std::unique_ptr<Move>> moves;
+    std::vector<std::unique_ptr<Move>> _moves;
 };
 

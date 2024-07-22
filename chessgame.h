@@ -1,10 +1,12 @@
 #include "board.h"
 #include "status.h"
 #include "movefactory.h"
+#include "player.h"
 #include <memory>
 #include <optional>
 
 class ChessGame {
+public:
     ChessGame();
 
     void regular_init();
@@ -26,5 +28,8 @@ private:
     Status _status;
     Board _board;
     MoveFactory _move_factory;
-    friend class ComputerPlayer;
+    friend class ComputerLv1;
+    friend class ComputerLv2;
+    friend class ComputerLv3;
+    friend class ComputerLv4;
 };

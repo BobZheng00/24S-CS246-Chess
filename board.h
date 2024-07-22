@@ -27,6 +27,7 @@ public:
 
     void standard_init();
     void clear();
+    void set_standard_position();
     BoardPosn get_king_posn(ChessColour colour) const;
 
     std::optional<Piece> get_piece(int row, int col) const;
@@ -50,3 +51,4 @@ inline constexpr std::array<std::optional<Piece>, 8> board_file {
     Piece(PieceType::Pawn, ChessColour::White), std::nullopt, std::nullopt, std::nullopt, std::nullopt, Piece(PieceType::Pawn, ChessColour::Black),
     Piece(Type, ChessColour::Black)
 };
+
