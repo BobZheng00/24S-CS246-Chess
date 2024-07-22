@@ -83,7 +83,7 @@ void Board::print_board() {
                 std::cout << _board[row][col].value().to_char() << ' ';
             } 
             else {
-                std::cout << ' ';
+                std::cout << "  ";
             }
         }
         std::cout << std::endl;

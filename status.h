@@ -17,8 +17,7 @@ enum class Result {
 
 struct Status {
     void clear();
-    ChessColour next_turn() const;
-    ChessColour get_turn() const;
+    ChessColour next_turn();
 
     Result result = Result::Unstarted;
     MoveHistory move_history;

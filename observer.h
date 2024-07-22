@@ -1,14 +1,17 @@
 #pragma once
 
 #include "piece.h"
-// #include "move.h"
-#include "status.h"
+#include "move.h"
 #include "board.h"
 // #include "window.h"
 #include <vector>
 #include <optional>
+#include <memory>
+
+enum class Result;
 
 class BoardSubject;
+class BoardPosn;
 
 class BoardObserver {
 public:
