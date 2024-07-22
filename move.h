@@ -1,8 +1,12 @@
+#pragma once
+
 #include "piece.h"
 #include "board.h"
 #include <vector>
 #include <memory>
 #include <optional>
+
+class Board;
 
 struct BoardPosn {
     int row;
@@ -20,39 +24,40 @@ struct RawMove {
 };
 
 struct Move: public RawMove {
-    PieceType movedPieceType;
+    Piece moved_piece;
 
     virtual ~Move() = default;
-    virtual void execute(Board& board) const = 0;
-    virtual void undo(Board& board) const = 0;
+    virtual std::unique_ptr<std::vector<BoardPosn>> execute(Board& board) const = 0;
+    virtual std::unique_ptr<std::vector<BoardPosn>> undo(Board& board) const = 0;
 };
 
-struct BasicMove : public Move {
-    void execute(Board& board) const override;
-    void undo(Board& board) const override;
+struct BasicMove: public Move {
+    std::unique_ptr<std::vector<BoardPosn>> execute(Board& board) const override;
+    std::unique_ptr<std::vector<BoardPosn>> undo(Board& board) const override;
 };
 
-struct CaptureMove : public Move {
-    PieceType capturedPieceType;
+struct CaptureMove: public Move {
+    Piece captured_piece;
+    BoardPosn captured_posn;
 
-    void execute(Board& board) const override;
-    void undo(Board& board) const override;
+    std::unique_ptr<std::vector<BoardPosn>> execute(Board& board) const override;
+    std::unique_ptr<std::vector<BoardPosn>> undo(Board& board) const override;
 };
 
-struct PromotionMove : public Move {
-    std::optional<PieceType> capturedPieceType;
-    PieceType promotedPieceType;
+struct PromotionMove: public Move {
+    std::optional<Piece> captured_piece;
+    Piece promoted_piece;
 
-    void execute(Board& board) const override;
-    void undo(Board& board) const override;
+    std::unique_ptr<std::vector<BoardPosn>> execute(Board& board) const override;
+    std::unique_ptr<std::vector<BoardPosn>> undo(Board& board) const override;
 };
 
-struct CastlingMove : public Move {
-    BoardPosn rookFrom;
-    BoardPosn rookTo;
+struct CastlingMove: public Move {
+    BoardPosn rook_from;
+    BoardPosn rook_to;
 
-    void execute(Board& board) const override;
-    void undo(Board& board) const override;
+    std::unique_ptr<std::vector<BoardPosn>> execute(Board& board) const override;
+    std::unique_ptr<std::vector<BoardPosn>> undo(Board& board) const override;
 };
 
 class MoveHistory {

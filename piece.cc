@@ -15,3 +15,7 @@ const Piece Piece::BlackRook(PieceType::Rook, ChessColour::Black);
 const Piece Piece::BlackBishop(PieceType::Bishop, ChessColour::Black);
 const Piece Piece::BlackKnight(PieceType::Knight, ChessColour::Black);
 const Piece Piece::BlackPawn(PieceType::Pawn, ChessColour::Black);
+
+char Piece::to_char() const {
+    return to_underlying(colour)? to_underlying(type) : tolower(to_underlying(type));
+}

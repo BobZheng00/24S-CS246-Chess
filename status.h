@@ -1,3 +1,5 @@
+#pragma once
+
 #include "move.h"
 #include "piece.h"
 #include <memory>

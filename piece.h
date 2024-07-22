@@ -1,6 +1,11 @@
-#include <cstdint>
+#pragma once
 
-enum class PieceType : std::uint8_t{
+#include "utils.h"
+
+#include <cctype>
+#include <utility>
+
+enum class PieceType : char {
     King = 'K',
     Queen = 'Q',
     Rook = 'R',
@@ -18,7 +23,7 @@ struct Piece {
     PieceType type;
     ChessColour colour;
 
-    constexpr Piece(PieceType type, ChessColour colour) : type(type), colour(colour) {}
+    constexpr Piece(PieceType type, ChessColour colour): type(type), colour(colour) {};
     constexpr bool operator==(const Piece& other) const {
         return type == other.type && colour == other.colour;
     }
