@@ -9,29 +9,29 @@ bool on_nth_rank(ChessColour colour, const BoardPosn& posn, int rank) {
     }
 }
 
-int push_n_rank(ChessColour colour, const BoardPosn& posn, int rank) {
+BoardPosn push_n_rank(ChessColour colour, const BoardPosn& posn, int rank) {
     if (to_underlying(colour)) {
-        return posn.rank+rank;
+        return {posn.file, posn.rank+rank};
     }
     else {
-        return posn.rank-rank;
+        return {posn.file, posn.rank-rank};
     }
 }
 
-void MoveFactory::_diagonal_moves(PossibleMove* pm, const BoardPosn& posn) const {
+void MoveFactory::_diagonal_moves(PossibleMove* pm, const BoardPosn& posn, UniqueMove move_type) const {
     if (_board.get_piece(posn) == std::nullopt) return;
 
-    auto insert_valid_posn = [this, posn, pm](const BoardPosn& cur_posn) {
+    auto insert_valid_posn = [this, posn, pm, move_type](const BoardPosn& cur_posn) {
         if (!cur_posn.on_board()) {
             return false;
         }
         else if (this->_board.get_piece(cur_posn) == std::nullopt) {
-            std::unique_ptr<Move> move{new BasicMove{posn, cur_posn, this->_board.get_piece(posn).value()}};
+            std::unique_ptr<Move> move{new BasicMove{posn, cur_posn, this->_board.get_piece(posn).value(), move_type}};
             pm->add_move(std::move(move));
             return true;
         }
         else if (this->_board.get_piece(cur_posn).value().colour != this->_board.get_piece(posn).value().colour) {
-            std::unique_ptr<Move> move{new CaptureMove{posn, cur_posn, this->_board.get_piece(posn).value(), this->_board.get_piece(cur_posn).value(), cur_posn}};
+            std::unique_ptr<Move> move{new CaptureMove{posn, cur_posn, this->_board.get_piece(posn).value(), this->_board.get_piece(cur_posn).value(), cur_posn, move_type}};
             pm->add_move(std::move(move));
             return false;
         }
@@ -51,20 +51,20 @@ void MoveFactory::_diagonal_moves(PossibleMove* pm, const BoardPosn& posn) const
     while (insert_valid_posn(tmp+=BoardPosn{1, -1}));
 }
 
-void MoveFactory::_linear_moves(PossibleMove* pm, const BoardPosn& posn) const {
+void MoveFactory::_linear_moves(PossibleMove* pm, const BoardPosn& posn, UniqueMove move_type) const {
     if (_board.get_piece(posn) == std::nullopt) return;
 
-    auto insert_valid_posn = [this, posn, pm](const BoardPosn& cur_posn) {
+    auto insert_valid_posn = [this, posn, pm, move_type](const BoardPosn& cur_posn) {
         if (!cur_posn.on_board()) {
             return false;
         }
         else if (this->_board.get_piece(cur_posn) == std::nullopt) {
-            std::unique_ptr<Move> move{new BasicMove{posn, cur_posn, this->_board.get_piece(posn).value()}};
+            std::unique_ptr<Move> move{new BasicMove{posn, cur_posn, this->_board.get_piece(posn).value(), move_type}};
             pm->add_move(std::move(move));
             return true;
         }
         else if (this->_board.get_piece(cur_posn).value().colour != this->_board.get_piece(posn).value().colour) {
-            std::unique_ptr<Move> move{new CaptureMove{posn, cur_posn, this->_board.get_piece(posn).value(), this->_board.get_piece(cur_posn).value(), cur_posn}};
+            std::unique_ptr<Move> move{new CaptureMove{posn, cur_posn, this->_board.get_piece(posn).value(), this->_board.get_piece(cur_posn).value(), cur_posn, move_type}};
             pm->add_move(std::move(move));
             return false;
         }
@@ -86,7 +86,21 @@ void MoveFactory::_linear_moves(PossibleMove* pm, const BoardPosn& posn) const {
 
 std::unique_ptr<PossibleMove> MoveFactory::_rook_moves(const BoardPosn& posn) const {
     auto pm = std::make_unique<PossibleMove>();
-    _linear_moves(pm.get(), posn);
+    if (_status.white_can_castle_queenside && posn == BoardPosn{0, 0} && _board.get_piece(posn) == Piece::WhiteRook) {
+        _linear_moves(pm.get(), posn, UniqueMove::UnableWhiteQueenSideCastling);
+    }
+    else if (_status.white_can_castle_kingside && posn == BoardPosn{7, 0} && _board.get_piece(posn) == Piece::WhiteRook) {
+        _linear_moves(pm.get(), posn, UniqueMove::UnableWhiteKingSideCastling);
+    }
+    else if (_status.black_can_castle_queenside && posn == BoardPosn{0, 7} && _board.get_piece(posn) == Piece::BlackRook) {
+        _linear_moves(pm.get(), posn, UniqueMove::UnableBlackQueenSideCastling);
+    }
+    else if (_status.black_can_castle_kingside && posn == BoardPosn{7, 7} && _board.get_piece(posn) == Piece::BlackRook) {
+        _linear_moves(pm.get(), posn, UniqueMove::UnableBlackKingSideCastling);
+    } else {
+        _linear_moves(pm.get(), posn);
+    }
+    
     return pm;
 }
 
@@ -143,8 +157,6 @@ std::unique_ptr<PossibleMove> MoveFactory::_pawn_moves(const BoardPosn& posn) co
     auto pm = std::make_unique<PossibleMove>();
     if (_board.get_piece(posn) == std::nullopt) return pm;
     
-    
-
     // promotion case 
     if (on_nth_rank(_board.get_piece(posn).value().colour, posn, 7)) {
         auto insert_valid_posn = [this, posn](PossibleMove* pm, const BoardPosn& cur_posn, bool should_capture) {
@@ -166,13 +178,62 @@ std::unique_ptr<PossibleMove> MoveFactory::_pawn_moves(const BoardPosn& posn) co
                 return false;
             }
         };
-        insert_valid_posn(pm.get(), BoardPosn{posn.file, push_n_rank(_board.get_piece(posn).value().colour, posn, 1)}+BoardPosn{1, 0}, true);
-        insert_valid_posn(pm.get(), BoardPosn{posn.file, push_n_rank(_board.get_piece(posn).value().colour, posn, 1)}+BoardPosn{-1, 0}, true);
-        insert_valid_posn(pm.get(), BoardPosn{posn.file, push_n_rank(_board.get_piece(posn).value().colour, posn, 1)}, false);
+        insert_valid_posn(pm.get(), push_n_rank(_board.get_piece(posn).value().colour, posn, 1)+BoardPosn{1, 0}, true);
+        insert_valid_posn(pm.get(), push_n_rank(_board.get_piece(posn).value().colour, posn, 1)+BoardPosn{-1, 0}, true);
+        insert_valid_posn(pm.get(), push_n_rank(_board.get_piece(posn).value().colour, posn, 1), false);
     }
     else {
+        auto insert_valid_posn = [this, posn](PossibleMove* pm, const BoardPosn& cur_posn, bool should_capture, bool should_enpassant) {
+            std::cout << cur_posn.file << ", " << cur_posn.rank << std::endl;
+            if (!cur_posn.on_board()) {
+                return false;
+            } // Basic Move
+            else if (!should_capture && !this->_board.get_piece(cur_posn) ) {
+                std::unique_ptr<Move> move{new BasicMove{posn, cur_posn, this->_board.get_piece(posn).value()}};
+                pm->add_move(std::move(move));
+                return true;
+            } // enpassant
+            else if (should_enpassant && should_capture && !this->_board.get_piece(cur_posn)) {
+                std::unique_ptr<Move> move{new CaptureMove{posn, cur_posn, this->_board.get_piece(posn).value(), this->_board.get_piece(push_n_rank(_board.get_piece(posn).value().colour, cur_posn, -1)).value(), push_n_rank(_board.get_piece(posn).value().colour, cur_posn, -1)}};
+                pm->add_move(std::move(move));
+                return false;
+            } // Capture but not enpassant
+            else if (should_capture && !should_enpassant && this->_board.get_piece(cur_posn) && this->_board.get_piece(cur_posn).value().colour != this->_board.get_piece(posn).value().colour) {
+                std::unique_ptr<Move> move{new CaptureMove{posn, cur_posn, this->_board.get_piece(posn).value(), this->_board.get_piece(cur_posn).value(), cur_posn}};
+                pm->add_move(std::move(move));
+                return false;
+            } 
+            else {
+                return false;
+            }
+        };
+
+        // double push and Basic Move
+        if (on_nth_rank(_board.get_piece(posn).value().colour, posn, 7)) {
+            int rank = 1;
+            while (rank <= 2 && insert_valid_posn(pm.get(), push_n_rank(_board.get_piece(posn).value().colour, posn, rank), false, false)) {
+                ++rank;
+            }
+        }
+        else {
+            insert_valid_posn(pm.get(), push_n_rank(_board.get_piece(posn).value().colour, posn, 1), false, false);
+        }
+
+        // Normal capture
+        insert_valid_posn(pm.get(), push_n_rank(_board.get_piece(posn).value().colour, posn, 1)+BoardPosn{1, 0}, true, false);
+        insert_valid_posn(pm.get(), push_n_rank(_board.get_piece(posn).value().colour, posn, 1)+BoardPosn{-1, 0}, true, false);
         
+        BoardPosn tmp = posn;
+        if (_status.cur_turn == ChessColour::White) {
+            if (tmp+BoardPosn{1, 0} == _status.black_last_double_pawn_push) insert_valid_posn(pm.get(), push_n_rank(_board.get_piece(posn).value().colour, posn, 1)+BoardPosn{1, 0}, true, true);
+            if (tmp+BoardPosn{-1, 0} == _status.black_last_double_pawn_push) insert_valid_posn(pm.get(), push_n_rank(_board.get_piece(posn).value().colour, posn, 1)+BoardPosn{1, 0}, true, true);
+        } else {
+            if (tmp+BoardPosn{1, 0} == _status.white_last_double_pawn_push) insert_valid_posn(pm.get(), push_n_rank(_board.get_piece(posn).value().colour, posn, 1)+BoardPosn{1, 0}, true, true);
+            if (tmp+BoardPosn{-1, 0} == _status.white_last_double_pawn_push) insert_valid_posn(pm.get(), push_n_rank(_board.get_piece(posn).value().colour, posn, 1)+BoardPosn{1, 0}, true, true);
+        }
     }
 
     return pm;
 }
+
+

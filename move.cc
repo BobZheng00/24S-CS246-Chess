@@ -1,9 +1,82 @@
 #include "move.h"
+#include "board.h"
+#include "status.h"
+#include "observer.h"
 
 const BoardPosn BoardPosn::Invalid(-1, -1);
 
 bool BoardPosn::operator==(const BoardPosn& other) const {
     return file == other.file && rank == other.rank;
+}
+
+std::string BoardPosn::to_string() const {
+    return std::string(1, 'a'+file) + std::to_string(rank+1);
+}
+
+void handle_execution_status_change(const Move* move, UniqueMove move_type, Status& status) {
+    switch (move_type) {
+    case UniqueMove::BlackDoublePawnPush:
+        status.black_last_double_pawn_push = move->to;
+        break;
+    case UniqueMove::WhiteDoublePawnPush:
+        status.white_last_double_pawn_push = move->to;
+        break;
+    case UniqueMove::UnableBlackKingSideCastling:
+        status.black_can_castle_kingside = false;
+        break;
+    case UniqueMove::UnableBlackQueenSideCastling:
+        status.black_can_castle_queenside = false;
+        break;
+    case UniqueMove::UnableWhiteKingSideCastling:
+        status.white_can_castle_kingside = false;
+        break;
+    case UniqueMove::UnableWhiteQueenSideCastling:
+        status.white_can_castle_queenside = false;
+        break;
+    case UniqueMove::UnableAllBlackCastling:
+        status.black_can_castle_kingside = false;
+        status.black_can_castle_queenside = false;
+        break;
+    case UniqueMove::UnableAllWhiteCastling:
+        status.white_can_castle_kingside = false;
+        status.white_can_castle_queenside = false;
+        break;
+    default:
+        break;
+    }
+}
+
+void handle_undo_status_change(const Move* move, UniqueMove move_type, Status& status) {
+    switch (move_type) {
+    case UniqueMove::BlackDoublePawnPush:
+        status.black_last_double_pawn_push = BoardPosn::Invalid;
+        break;
+    case UniqueMove::WhiteDoublePawnPush:
+        status.white_last_double_pawn_push = BoardPosn::Invalid;
+        break;
+    case UniqueMove::UnableBlackKingSideCastling:
+        status.black_can_castle_kingside = true;
+        break;
+    case UniqueMove::UnableBlackQueenSideCastling:
+        status.black_can_castle_queenside = true;
+        break;
+    case UniqueMove::UnableWhiteKingSideCastling:
+        status.white_can_castle_kingside = true;
+        break;
+    case UniqueMove::UnableWhiteQueenSideCastling:
+        status.white_can_castle_queenside = true;
+        break;
+    case UniqueMove::UnableAllBlackCastling:
+        status.black_can_castle_kingside = true;
+        status.black_can_castle_queenside = true;
+        break;
+    case UniqueMove::UnableAllWhiteCastling:
+        status.white_can_castle_kingside = true;
+        status.white_can_castle_queenside = true;
+        break;
+    default:
+        break;
+    }
 }
 
 BoardPosn& BoardPosn::operator+=(const BoardPosn& other) {
@@ -20,69 +93,77 @@ bool BoardPosn::on_board() const {
     return file >= 0 && file <= 7 && rank >= 0 && rank <= 7;
 }
 
-std::unique_ptr<std::vector<BoardPosn>> BasicMove::execute(Board& board) const {
+std::unique_ptr<std::vector<BoardPosn>> BasicMove::execute(Board& board, Status& status) const {
     board.reset_piece(from);
     board.set_piece(to, moved_piece);
+    handle_execution_status_change(this, move_type, status);
 
     return std::make_unique<std::vector<BoardPosn>>(std::initializer_list<BoardPosn>{from, to});
 }
 
-std::unique_ptr<std::vector<BoardPosn>> BasicMove::undo(Board& board) const {
+std::unique_ptr<std::vector<BoardPosn>> BasicMove::undo(Board& board, Status& status) const {
     board.reset_piece(to);
     board.set_piece(from, moved_piece);
+    handle_undo_status_change(this, move_type, status);
 
     return std::make_unique<std::vector<BoardPosn>>(std::initializer_list<BoardPosn>{from, to});
 }
 
-std::unique_ptr<std::vector<BoardPosn>> CaptureMove::execute(Board& board) const {
+std::unique_ptr<std::vector<BoardPosn>> CaptureMove::execute(Board& board, Status& status) const {
     board.reset_piece(from);
     board.reset_piece(to);
     board.reset_piece(captured_posn);
     board.set_piece(to, moved_piece);
+    handle_execution_status_change(this, move_type, status);
 
     return std::make_unique<std::vector<BoardPosn>>(std::initializer_list<BoardPosn>{from, to, captured_posn});
 }
 
-std::unique_ptr<std::vector<BoardPosn>> CaptureMove::undo(Board& board) const {
+std::unique_ptr<std::vector<BoardPosn>> CaptureMove::undo(Board& board, Status& status) const {
     board.reset_piece(to);
     board.set_piece(captured_posn, captured_piece);
     board.set_piece(from, moved_piece);
+    handle_undo_status_change(this, move_type, status);
 
     return std::make_unique<std::vector<BoardPosn>>(std::initializer_list<BoardPosn>{from, to, captured_posn});
 }
 
-std::unique_ptr<std::vector<BoardPosn>> PromotionMove::execute(Board& board) const {
+std::unique_ptr<std::vector<BoardPosn>> PromotionMove::execute(Board& board, Status& status) const {
     board.reset_piece(from);
     board.reset_piece(to);
     board.set_piece(to, promoted_piece);
+    handle_execution_status_change(this, move_type, status);
 
     return std::make_unique<std::vector<BoardPosn>>(std::initializer_list<BoardPosn>{from, to});
 }
 
-std::unique_ptr<std::vector<BoardPosn>> PromotionMove::undo(Board& board) const {
+std::unique_ptr<std::vector<BoardPosn>> PromotionMove::undo(Board& board, Status& status) const {
     board.reset_piece(to);
     if (captured_piece) {
         board.set_piece(to, captured_piece.value());
     }
     board.set_piece(from, moved_piece);
+    handle_undo_status_change(this, move_type, status);
 
     return std::make_unique<std::vector<BoardPosn>>(std::initializer_list<BoardPosn>{from, to});
 }
 
-std::unique_ptr<std::vector<BoardPosn>> CastlingMove::execute(Board& board) const {
+std::unique_ptr<std::vector<BoardPosn>> CastlingMove::execute(Board& board, Status& status) const {
     board.reset_piece(from);
     board.reset_piece(rook_from);
     board.set_piece(to, moved_piece);
     board.set_piece(rook_to, Piece(PieceType::Rook, moved_piece.colour));
+    handle_execution_status_change(this, move_type, status);
 
     return std::make_unique<std::vector<BoardPosn>>(std::initializer_list<BoardPosn>{from, to, rook_from, rook_to});
 }
 
-std::unique_ptr<std::vector<BoardPosn>> CastlingMove::undo(Board& board) const {
+std::unique_ptr<std::vector<BoardPosn>> CastlingMove::undo(Board& board, Status& status) const {
     board.reset_piece(to);
     board.reset_piece(rook_to);
     board.set_piece(from, moved_piece);
     board.set_piece(rook_from, Piece(PieceType::Rook, moved_piece.colour));
+    handle_undo_status_change(this, move_type, status);
 
     return std::make_unique<std::vector<BoardPosn>>(std::initializer_list<BoardPosn>{from, to, rook_from, rook_to});
 }
@@ -95,17 +176,23 @@ void MoveHistory::reset() {
     std::stack<std::unique_ptr<Move>>().swap(moves);
 }
 
-std::unique_ptr<Move> MoveHistory::pop_last_move() {
+void MoveHistory::undo_last_move(Board& board, Status& status) {
     if (moves.empty()) {
         std::cerr << "No moves to undo." << std::endl;
-        return nullptr;
+        return;
     }
-    std::unique_ptr<Move> last_move = std::move(moves.top());
+    moves.top()->undo(board, status);
     moves.pop();
-    return last_move;
+    if (moves.top()->move_type == UniqueMove::BlackDoublePawnPush) {
+        status.black_last_double_pawn_push = moves.top()->to;
+    }
+    else if (moves.top()->move_type == UniqueMove::WhiteDoublePawnPush) {
+        status.white_last_double_pawn_push = moves.top()->to;
+    }
+    return;
 }
 
-bool PossibleMove::is_possible_move(BoardPosn from, BoardPosn to) const {
+bool PossibleMove::is_possible_move(BoardPosn& from, BoardPosn& to) const {
     for (const auto& move : moves) {
         if (move->from == from && move->to == to) {
             return true;

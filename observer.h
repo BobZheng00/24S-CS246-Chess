@@ -1,9 +1,16 @@
 #pragma once
 
+<<<<<<< HEAD
 #include "piece.h"
 #include "move.h"
 #include "board.h"
 #include "window.h"
+=======
+// #include "piece.h"
+// #include "move.h"
+// #include "board.h"
+// #include "window.h"
+>>>>>>> refs/remotes/origin/main
 #include <vector>
 #include <optional>
 #include <memory>
@@ -19,7 +26,7 @@ public:
     virtual ~BoardObserver() = default;
     virtual void update_board(std::unique_ptr<std::vector<BoardPosn>>, Result) const = 0;
 private:
-    const BoardSubject*  _p_board_subj;
+     BoardSubject*  _p_board_subj;
 };
 
 class TextDisplay : public BoardObserver {

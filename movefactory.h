@@ -11,13 +11,13 @@ public:
     std::unique_ptr<PossibleMove> get_moves(const BoardPosn& posn) const;
     std::unique_ptr<PossibleMove> get_all_moves(ChessColour colour) const;
     
-    bool is_move_safe(const Move& move) const; // usually be called 
+    bool is_move_safe(const Move& move) const;
     bool is_capture_valuable(const CaptureMove& move) const;
     bool is_mated() const;
     bool is_drawn() const;
 // private:
-    void _diagonal_moves(PossibleMove* pm, const BoardPosn& posn) const;
-    void _linear_moves(PossibleMove* pm, const BoardPosn& posn) const;
+    void _diagonal_moves(PossibleMove* pm, const BoardPosn& posn, UniqueMove move_type = UniqueMove::None) const;
+    void _linear_moves(PossibleMove* pm, const BoardPosn& posn, UniqueMove move_type = UniqueMove::None) const;
     // We assert corresponding piece exists on the position for the following move generation
     std::unique_ptr<PossibleMove> _rook_moves(const BoardPosn& posn) const;
     std::unique_ptr<PossibleMove> _bishop_moves(const BoardPosn& posn) const;
