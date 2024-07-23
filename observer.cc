@@ -27,7 +27,9 @@ void update_board(std::unique_ptr<std::vector<BoardPosn>>, Result) const {
             } else {
                 _window.fillRectangle(x, y, squareSize, squareSize, Xwindow::Black);
             }
+            std::optional<Piece> piece = get_piece(file, rank);
+
+            piece.value()
         }
     }
-    
 }
