@@ -19,17 +19,18 @@ enum class Result {
 };
 
 struct Status {
+    Status();
     void clear();
     void print_status() const;
     ChessColour next_turn();
 
     Result result;
-    MoveHistory move_history;
+    std::unique_ptr<MoveHistory> move_history;
     ChessColour cur_turn;
     bool white_can_castle_kingside = true;
     bool white_can_castle_queenside = true;
     bool black_can_castle_kingside = true;
     bool black_can_castle_queenside = true;
-    BoardPosn white_last_double_pawn_push;
-    BoardPosn black_last_double_pawn_push;
+    std::unique_ptr<BoardPosn> white_last_double_pawn_push;
+    std::unique_ptr<BoardPosn> black_last_double_pawn_push;
 };

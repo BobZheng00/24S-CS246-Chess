@@ -27,8 +27,8 @@ void Board::standard_init() {
         board_file<PieceType::Rook>,
         board_file<PieceType::Knight>,
         board_file<PieceType::Bishop>,
-        board_file<PieceType::King>,
         board_file<PieceType::Queen>,
+        board_file<PieceType::King>,
         board_file<PieceType::Bishop>,
         board_file<PieceType::Knight>,
         board_file<PieceType::Rook>
@@ -91,5 +91,5 @@ void Board::print_board() {
         }
         std::cout << std::endl;
     }
-    std::cout << "  a b c d e f g h" << std::endl;
+    std::cout << "  a b c d e f g h" << std::endl << std::endl;
 }

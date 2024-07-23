@@ -65,37 +65,57 @@ int main() {
     //     b.print_board();
     // }
 
-    b.set_piece({2, 4}, Piece::WhitePawn);
-    b.set_piece({1, 5}, Piece::BlackPawn);
-    b.set_piece({3, 4}, Piece::BlackPawn);
-    s.black_last_double_pawn_push = {3, 4};
-    b.print_board();
+    // b.set_piece({2, 4}, Piece::WhitePawn);
+    // b.set_piece({1, 5}, Piece::BlackPawn);
+    // b.set_piece({3, 4}, Piece::BlackPawn);
+    // s.black_last_double_pawn_push = std::make_unique<BoardPosn>(3, 4);
+    // b.print_board();
 
-    std::unique_ptr<PossibleMove> pm1 = mf._pawn_moves({2, 4});
+    // std::unique_ptr<PossibleMove> pm1 = mf._pawn_moves({2, 4});
 
-    for (auto& m : pm1->moves) {
-        m->execute(b, s);
-        b.print_board();
-        m->undo(b, s);
-        b.print_board();
-    }
+    // for (auto& m : pm1->moves) {
+    //     m->execute(b, s);
+    //     b.print_board();
+    //     m->undo(b, s);
+    //     b.print_board();
+    // }
 
-    std::unique_ptr<PossibleMove> pm2 = mf._pawn_moves({6, 1});
+    // std::unique_ptr<PossibleMove> pm2 = mf._pawn_moves({6, 1});
 
-    for (auto& m : pm2->moves) {
-        m->execute(b, s);
-        b.print_board();
-        m->undo(b, s);
-        b.print_board();
-    }
+    // for (auto& m : pm2->moves) {
+    //     m->execute(b, s);
+    //     b.print_board();
+    //     m->undo(b, s);
+    //     b.print_board();
+    // }
 
-    std::unique_ptr<PossibleMove> pm3 = mf._pawn_moves({1, 5});
+    // std::unique_ptr<PossibleMove> pm3 = mf._pawn_moves({1, 5});
+
+    // for (auto& m : pm3->moves) {
+    //     m->execute(b, s);
+    //     b.print_board();
+    //     m->undo(b, s);
+    //     b.print_board();
+    // }
+
+    // b.reset_piece({0, 1});
+    // std::unique_ptr<Move> move1{new BasicMove{{0, 0}, {0, 2}, Piece::WhiteRook, UniqueMove::UnableWhiteQueenSideCastling}};
+    // move1->execute(b, s);
+    // b.print_board();
+    // s.print_status();
+    // move1->undo(b, s);
+    // b.print_board();
+    // s.print_status();
+
+    std::unique_ptr<PossibleMove> pm3 = mf.get_moves({1, 1});
 
     for (auto& m : pm3->moves) {
         m->execute(b, s);
         b.print_board();
+        s.print_status();
         m->undo(b, s);
         b.print_board();
+        s.print_status();
     }
 
 }

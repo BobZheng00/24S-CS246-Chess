@@ -16,10 +16,10 @@ std::string BoardPosn::to_string() const {
 void handle_execution_status_change(const Move* move, UniqueMove move_type, Status& status) {
     switch (move_type) {
     case UniqueMove::BlackDoublePawnPush:
-        status.black_last_double_pawn_push = move->to;
+        status.black_last_double_pawn_push = std::make_unique<BoardPosn>(move->to.file, move->to.rank);
         break;
     case UniqueMove::WhiteDoublePawnPush:
-        status.white_last_double_pawn_push = move->to;
+        status.white_last_double_pawn_push = std::make_unique<BoardPosn>(move->to.file, move->to.rank);
         break;
     case UniqueMove::UnableBlackKingSideCastling:
         status.black_can_castle_kingside = false;
@@ -49,10 +49,10 @@ void handle_execution_status_change(const Move* move, UniqueMove move_type, Stat
 void handle_undo_status_change(const Move* move, UniqueMove move_type, Status& status) {
     switch (move_type) {
     case UniqueMove::BlackDoublePawnPush:
-        status.black_last_double_pawn_push = BoardPosn::Invalid;
+        status.black_last_double_pawn_push = std::make_unique<BoardPosn>(-1, -1);
         break;
     case UniqueMove::WhiteDoublePawnPush:
-        status.white_last_double_pawn_push = BoardPosn::Invalid;
+        status.white_last_double_pawn_push = std::make_unique<BoardPosn>(-1, -1);
         break;
     case UniqueMove::UnableBlackKingSideCastling:
         status.black_can_castle_kingside = true;
@@ -184,10 +184,10 @@ void MoveHistory::undo_last_move(Board& board, Status& status) {
     moves.top()->undo(board, status);
     moves.pop();
     if (moves.top()->move_type == UniqueMove::BlackDoublePawnPush) {
-        status.black_last_double_pawn_push = moves.top()->to;
+        status.black_last_double_pawn_push = std::make_unique<BoardPosn>(moves.top()->to.file, moves.top()->to.rank);
     }
     else if (moves.top()->move_type == UniqueMove::WhiteDoublePawnPush) {
-        status.white_last_double_pawn_push = moves.top()->to;
+        status.white_last_double_pawn_push = std::make_unique<BoardPosn>(moves.top()->to.file, moves.top()->to.rank);
     }
     return;
 }
