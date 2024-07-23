@@ -1,4 +1,7 @@
+#include "move.h"
 #include "board.h"
+#include "status.h"
+#include "observer.h"
 
 void BoardSubject::attach(std::shared_ptr<BoardObserver> o) {
     observers.emplace_back(o);

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "piece.h"
-#include "move.h"
-#include "board.h"
+// #include "piece.h"
+// #include "move.h"
+// #include "board.h"
 // #include "window.h"
 #include <vector>
 #include <optional>

@@ -1,8 +1,11 @@
 #pragma once
 
-#include "move.h"
 #include "piece.h"
+#include "move.h"
 #include <memory>
+
+class MoveHistory;
+struct BoardPosn; 
 
 enum class Result {
     Unstarted,
@@ -17,15 +20,16 @@ enum class Result {
 
 struct Status {
     void clear();
+    void print_status() const;
     ChessColour next_turn();
 
-    Result result = Result::Unstarted;
+    Result result;
     MoveHistory move_history;
-    ChessColour cur_turn = ChessColour::White;
+    ChessColour cur_turn;
     bool white_can_castle_kingside = true;
     bool white_can_castle_queenside = true;
     bool black_can_castle_kingside = true;
     bool black_can_castle_queenside = true;
-    BoardPosn white_last_double_pawn_push = BoardPosn::Invalid;
-    BoardPosn black_last_double_pawn_push = BoardPosn::Invalid;
+    BoardPosn white_last_double_pawn_push;
+    BoardPosn black_last_double_pawn_push;
 };

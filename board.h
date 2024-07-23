@@ -1,7 +1,6 @@
 #pragma once
 
 #include "piece.h"
-#include "observer.h"
 #include <iostream>
 #include <array>
 #include <optional>
@@ -10,6 +9,7 @@
 
 class BoardObserver;
 struct BoardPosn;
+enum class Result;
 
 class BoardSubject {
     std::vector<std::shared_ptr<BoardObserver>> observers;
