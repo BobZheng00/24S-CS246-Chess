@@ -1,7 +1,6 @@
-#include "move.h"
-#include "board.h"
 #include "status.h"
-#include "observer.h"
+#include "move.h" 
+#include "board.h"
 
 Status::Status() {
     clear();

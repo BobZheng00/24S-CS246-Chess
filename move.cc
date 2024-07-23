@@ -1,7 +1,6 @@
 #include "move.h"
 #include "board.h"
 #include "status.h"
-#include "observer.h"
 
 const BoardPosn BoardPosn::Invalid(-1, -1);
 

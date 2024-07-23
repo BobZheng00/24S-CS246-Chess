@@ -1,8 +1,7 @@
 #pragma once
 
-#include "piece.h"
-#include "move.h"
 #include <memory>
+#include "piece.h" 
 
 class MoveHistory;
 struct BoardPosn; 
