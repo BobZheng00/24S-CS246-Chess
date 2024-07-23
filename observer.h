@@ -19,7 +19,7 @@ public:
     virtual ~BoardObserver() = default;
     virtual void update_board(std::unique_ptr<std::vector<BoardPosn>>, Result) const = 0;
 private:
-    const BoardSubject*  _p_board_subj;
+     BoardSubject*  _p_board_subj;
 };
 
 class TextDisplay : public BoardObserver {
