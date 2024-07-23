@@ -41,46 +41,46 @@ void Board::clear() {
 }
 
 BoardPosn Board::get_king_posn(ChessColour colour) const {
-    for (int row = 0; row < 8; ++row) {
-        for (int col = 0; col < 8; ++col) {
-            if (_board[row][col] && _board[row][col].value() == Piece(PieceType::King, colour)) {
-                return BoardPosn(row, col);
+    for (int file = 0; file < 8; ++file) {
+        for (int rank = 0; rank < 8; ++rank) {
+            if (_board[file][rank] && _board[file][rank].value() == Piece(PieceType::King, colour)) {
+                return BoardPosn(file, rank);
             }
         }
     }
     return BoardPosn::Invalid;
 }
 
-std::optional<Piece> Board::get_piece(int row, int col) const {
-    return _board[row][col];
+std::optional<Piece> Board::get_piece(int file, int rank) const {
+    return _board[file][rank];
 }
 
 std::optional<Piece> Board::get_piece(const BoardPosn& posn) const {
-    return _board[posn.row][posn.col];
+    return _board[posn.file][posn.rank];
 }
 
-void Board::set_piece(int row, int col, const Piece& piece) {
-    _board[row][col] = piece;
+void Board::set_piece(int file, int rank, const Piece& piece) {
+    _board[file][rank] = piece;
 }
 
 void Board::set_piece(const BoardPosn& posn, const Piece& piece) {
-    _board[posn.row][posn.col] = piece;
+    _board[posn.file][posn.rank] = piece;
 }
 
-void Board::reset_piece(int row, int col) {
-    _board[row][col].reset();
+void Board::reset_piece(int file, int rank) {
+    _board[file][rank].reset();
 }
 
 void Board::reset_piece(const BoardPosn& posn) {
-    _board[posn.row][posn.col].reset();
+    _board[posn.file][posn.rank].reset();
 }
 
 void Board::print_board() {
-    for (int col = 7; col >= 0; --col) {
-        std::cout << col+1 << ' ';
-        for (int row = 0; row < 8; ++row) {
-            if (_board[row][col]) {
-                std::cout << _board[row][col].value().to_char() << ' ';
+    for (int rank = 7; rank >= 0; --rank) {
+        std::cout << rank+1 << ' ';
+        for (int file = 0; file < 8; ++file) {
+            if (_board[file][rank]) {
+                std::cout << _board[file][rank].value().to_char() << ' ';
             } 
             else {
                 std::cout << "  ";

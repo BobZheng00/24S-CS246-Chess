@@ -10,11 +10,14 @@
 class Board;
 
 struct BoardPosn {
-    int row;
-    int col;
+    int file;
+    int rank;
 
-    BoardPosn(int row, int col) : row(row), col(col) {}
+    BoardPosn(int file, int rank) : file(file), rank(rank) {}
     bool operator==(const BoardPosn& other) const;
+    BoardPosn& operator+=(const BoardPosn& other);
+    BoardPosn operator+(const BoardPosn& other);
+    bool on_board() const;
 
     static const BoardPosn Invalid;
 };
@@ -82,7 +85,7 @@ class PossibleMove {
 public:
     bool is_possible_move(BoardPosn from, BoardPosn to) const;
     void add_move(std::unique_ptr<Move> move);
-private:
+// private:
     std::vector<std::unique_ptr<Move>> moves;
 };
 

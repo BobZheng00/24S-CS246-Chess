@@ -30,17 +30,17 @@ public:
     void set_standard_position();
     BoardPosn get_king_posn(ChessColour colour) const;
 
-    std::optional<Piece> get_piece(int row, int col) const;
+    std::optional<Piece> get_piece(int file, int rank) const;
     std::optional<Piece> get_piece(const BoardPosn& posn) const;
-    void set_piece(int row, int col, const Piece& piece);
+    void set_piece(int file, int rank, const Piece& piece);
     void set_piece(const BoardPosn& posn, const Piece& piece);
-    void reset_piece(int row, int col);
+    void reset_piece(int file, int rank);
     void reset_piece(const BoardPosn& posn);
     void print_board(); // just for testing
 
 private:
-    // std::array<std::optional<Piece>, 8> is a column, denoted by letter a-h
-    // for column a, std::array<std::optional<Piece>, 8> contains BoardPosn a1, a2, ..., a8
+    // std::array<std::optional<Piece>, 8> is a file (column), denoted by letter a-h
+    // for file a, std::array<std::optional<Piece>, 8> contains BoardPosn a1, a2, ..., a8
     
     std::array<std::array<std::optional<Piece>, 8>, 8> _board;
 };

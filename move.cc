@@ -3,7 +3,21 @@
 const BoardPosn BoardPosn::Invalid(-1, -1);
 
 bool BoardPosn::operator==(const BoardPosn& other) const {
-    return row == other.row && col == other.col;
+    return file == other.file && rank == other.rank;
+}
+
+BoardPosn& BoardPosn::operator+=(const BoardPosn& other) {
+    file += other.file;
+    rank += other.rank;
+    return *this;
+}
+
+BoardPosn BoardPosn::operator+(const BoardPosn& other) {
+    return {file+other.file, rank+other.rank};
+}
+
+bool BoardPosn::on_board() const {
+    return file >= 0 && file <= 7 && rank >= 0 && rank <= 7;
 }
 
 std::unique_ptr<std::vector<BoardPosn>> BasicMove::execute(Board& board) const {
