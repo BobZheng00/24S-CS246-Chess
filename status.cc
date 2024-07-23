@@ -1,18 +1,22 @@
-#include "move.h"
-#include "board.h"
 #include "status.h"
-#include "observer.h"
+#include "move.h" 
+#include "board.h"
+
+Status::Status() {
+    clear();
+}
 
 void Status::clear() {
     result = Result::Unstarted;
-    move_history.reset();
+    move_history = std::make_unique<MoveHistory>();
+    move_history->reset();
     cur_turn = ChessColour::White;
     white_can_castle_kingside = true;
     white_can_castle_queenside = true;
     black_can_castle_kingside = true;
     black_can_castle_queenside = true;
-    white_last_double_pawn_push = BoardPosn::Invalid;
-    black_last_double_pawn_push = BoardPosn::Invalid;
+    white_last_double_pawn_push = std::make_unique<BoardPosn>(-1, -1);
+    black_last_double_pawn_push = std::make_unique<BoardPosn>(-1, -1);
 }
 
 void Status::print_status() const {
@@ -48,8 +52,8 @@ void Status::print_status() const {
     std::cout << "White can castle queenside: " << (white_can_castle_queenside ? "Yes" : "No") << std::endl;
     std::cout << "Black can castle kingside: " << (black_can_castle_kingside ? "Yes" : "No") << std::endl;
     std::cout << "Black can castle queenside: " << (black_can_castle_queenside ? "Yes" : "No") << std::endl;
-    std::cout << "White last double pawn push: " << (white_last_double_pawn_push == BoardPosn::Invalid ? "None" : white_last_double_pawn_push.to_string()) << std::endl;
-    std::cout << "Black last double pawn push: " << (black_last_double_pawn_push == BoardPosn::Invalid ? "None" : black_last_double_pawn_push.to_string()) << std::endl;
+    std::cout << "White last double pawn push: " << (*white_last_double_pawn_push == BoardPosn::Invalid ? "None" : white_last_double_pawn_push->to_string()) << std::endl;
+    std::cout << "Black last double pawn push: " << (*black_last_double_pawn_push == BoardPosn::Invalid ? "None" : black_last_double_pawn_push->to_string()) << std::endl;
 }
 
 ChessColour Status::next_turn() {

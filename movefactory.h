@@ -9,7 +9,7 @@ class MoveFactory {
 public:
     MoveFactory(const Board& board, const Status& status): _board{board}, _status{status} {}
     std::unique_ptr<PossibleMove> get_moves(const BoardPosn& posn) const;
-    std::unique_ptr<PossibleMove> get_all_moves(ChessColour colour) const;
+    std::unique_ptr<PossibleMove> get_all_moves(ChessColour colour) const; // does not include moves of king
     
     bool is_move_safe(const Move& move) const;
     bool is_capture_valuable(const CaptureMove& move) const;
@@ -24,6 +24,7 @@ public:
     std::unique_ptr<PossibleMove> _queen_moves(const BoardPosn& posn) const;
     std::unique_ptr<PossibleMove> _knight_moves(const BoardPosn& posn) const;
     std::unique_ptr<PossibleMove> _pawn_moves(const BoardPosn& posn) const;
+    std::unique_ptr<PossibleMove> _king_moves(const BoardPosn& posn) const;
     const Board& _board;
     const Status& _status;
 };

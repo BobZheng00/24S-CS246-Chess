@@ -1,8 +1,6 @@
 #pragma once
 
 #include "piece.h"
-#include "board.h"
-#include "status.h"
 #include <vector>
 #include <stack>
 #include <memory>
