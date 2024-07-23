@@ -36,6 +36,22 @@ std::unique_ptr<PossibleMove> MoveFactory::get_moves(const BoardPosn& posn) cons
     }
 }
 
+std::unique_ptr<PossibleMove> MoveFactory::get_all_moves(ChessColour colour) const {
+    auto pm = std::make_unique<PossibleMove>();
+    for (int i = 0; i < 8; ++i) {
+        for (int j = 0; j < 8; ++j) {
+            if (_board.get_piece({i, j}) == std::nullopt) continue;
+            if (_board.get_piece({i, j}).value().colour == colour && _board.get_piece({i, j}).value().type != PieceType::King) {
+                auto tmp = get_moves({i, j});
+                for (auto& move : tmp->moves) {
+                    pm->add_move(std::move(move));
+                }
+            }
+        }
+    }
+    return pm;
+}
+
 void MoveFactory::_diagonal_moves(PossibleMove* pm, const BoardPosn& posn, UniqueMove move_type) const {
     if (_board.get_piece(posn) == std::nullopt) return;
 

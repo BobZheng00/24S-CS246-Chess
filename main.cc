@@ -107,7 +107,9 @@ int main() {
     // b.print_board();
     // s.print_status();
 
-    std::unique_ptr<PossibleMove> pm3 = mf.get_moves({1, 1});
+    b.set_piece({1, 2}, Piece::BlackPawn);
+
+    std::unique_ptr<PossibleMove> pm3 = mf.get_all_moves(ChessColour::White);
 
     for (auto& m : pm3->moves) {
         m->execute(b, s);

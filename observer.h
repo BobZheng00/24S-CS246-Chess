@@ -1,16 +1,9 @@
 #pragma once
 
-<<<<<<< HEAD
-// #include "piece.h"
-// #include "move.h"
-// #include "board.h"
-// #include "window.h"
-=======
+#include "window.h"
 #include "piece.h"
 #include "move.h"
 #include "board.h"
-#include "window.h"
->>>>>>> d609bde322fdff200d0e056f5e0396e2880ac801
 #include <vector>
 #include <optional>
 #include <memory>
@@ -39,6 +32,6 @@ class GraphicDisplay : public BoardObserver {
 public:
     GraphicDisplay();
     virtual void update_board(std::unique_ptr<std::vector<BoardPosn>>, Result) const override;
-// private:
-//     XWindow _window;
+private:
+    Xwindow _window;
 };
