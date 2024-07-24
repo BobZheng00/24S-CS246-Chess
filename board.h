@@ -12,10 +12,10 @@ struct BoardPosn;
 enum class Result;
 
 class BoardSubject {
-    std::vector<std::shared_ptr<BoardObserver>> observers;
+    std::vector<BoardObserver*> observers;
 public:
-    void attach(std::shared_ptr<BoardObserver>);
-    void detach(std::shared_ptr<BoardObserver>);
+    void attach(BoardObserver*);
+    void detach(BoardObserver*);
     virtual std::optional<Piece> get_piece(int file, int rank) const = 0;
     virtual std::optional<Piece> get_piece(const BoardPosn& posn) const = 0;
     void notify_observers(std::unique_ptr<std::vector<BoardPosn>>, Result) const;
