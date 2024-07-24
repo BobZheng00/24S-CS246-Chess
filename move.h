@@ -23,6 +23,10 @@ enum class UniqueMove {
     None
 };
 
+UniqueMove get_unable_kingside_castling(ChessColour colour);
+UniqueMove get_unable_queenside_castling(ChessColour colour);
+UniqueMove get_unable_all_castling(ChessColour colour);
+
 struct BoardPosn {
     int file;
     int rank;
@@ -79,9 +83,8 @@ struct PromotionMove: public Move {
 struct CastlingMove: public Move {
     BoardPosn rook_from;
     BoardPosn rook_to;
-    UniqueMove rook_move_type;
-    CastlingMove(const BoardPosn& from, const BoardPosn& to, const Piece& moved, const BoardPosn& rook_from, const BoardPosn& rook_to, UniqueMove king_move_type = UniqueMove::None, UniqueMove rook_move_type = UniqueMove::None):
-        Move{from, to, moved, king_move_type}, rook_from{rook_from}, rook_to{rook_to}, rook_move_type{rook_move_type} {}
+    CastlingMove(const BoardPosn& from, const BoardPosn& to, const Piece& moved, const BoardPosn& rook_from, const BoardPosn& rook_to, UniqueMove king_move_type = UniqueMove::None):
+        Move{from, to, moved, king_move_type}, rook_from{rook_from}, rook_to{rook_to} {}
     std::unique_ptr<std::vector<BoardPosn>> execute(Board& board, Status& status) const override;
     std::unique_ptr<std::vector<BoardPosn>> undo(Board& board, Status& status) const override;
 };

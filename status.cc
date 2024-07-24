@@ -6,6 +6,24 @@ Status::Status() {
     clear();
 }
 
+// Deep copy of unique_ptr-managed resources
+Status::Status(const Status& other): result(other.result), 
+    move_history(std::make_unique<MoveHistory>()),
+    cur_turn(other.cur_turn),
+    white_can_castle_kingside(other.white_can_castle_kingside),
+    white_can_castle_queenside(other.white_can_castle_queenside),
+    black_can_castle_kingside(other.black_can_castle_kingside),
+    black_can_castle_queenside(other.black_can_castle_queenside),
+    white_last_double_pawn_push(), black_last_double_pawn_push() {
+    if (other.white_last_double_pawn_push) {
+        white_last_double_pawn_push = std::make_unique<BoardPosn>(other.white_last_double_pawn_push->file, other.white_last_double_pawn_push->rank);
+    }
+    if (other.black_last_double_pawn_push) {
+        black_last_double_pawn_push = std::make_unique<BoardPosn>(other.black_last_double_pawn_push->file, other.black_last_double_pawn_push->rank);
+    }
+}
+
+
 void Status::clear() {
     result = Result::Unstarted;
     move_history = std::make_unique<MoveHistory>();
@@ -17,6 +35,40 @@ void Status::clear() {
     black_can_castle_queenside = true;
     white_last_double_pawn_push = std::make_unique<BoardPosn>(-1, -1);
     black_last_double_pawn_push = std::make_unique<BoardPosn>(-1, -1);
+}
+
+bool Status::can_castle_kingside(ChessColour colour) const {
+    return colour == ChessColour::White ? white_can_castle_kingside : black_can_castle_kingside;
+}
+
+bool Status::can_castle_queenside(ChessColour colour) const {
+    return colour == ChessColour::White ? white_can_castle_queenside : black_can_castle_queenside;
+}
+
+UniqueMove Status::king_unable_castling(ChessColour colour) const {
+    switch (colour) {
+    case ChessColour::White:
+        if (white_can_castle_kingside && white_can_castle_queenside) {
+            return UniqueMove::UnableAllWhiteCastling;
+        } else if (white_can_castle_kingside) {
+            return UniqueMove::UnableWhiteKingSideCastling;
+        } else if (white_can_castle_queenside) {
+            return UniqueMove::UnableWhiteQueenSideCastling;
+        }
+        break;
+    case ChessColour::Black:
+        if (black_can_castle_kingside && black_can_castle_queenside) {
+            return UniqueMove::UnableAllBlackCastling;
+        } else if (black_can_castle_kingside) {
+            return UniqueMove::UnableBlackKingSideCastling;
+        } else if (black_can_castle_queenside) {
+            return UniqueMove::UnableBlackQueenSideCastling;
+        }
+        break;
+    default:
+        return UniqueMove::None;
+    }
+    return UniqueMove::None;
 }
 
 void Status::print_status() const {

@@ -11,7 +11,7 @@ int main() {
     Board b;
     Status s;
     MoveFactory mf{b, s};
-    b.standard_init();
+    // b.standard_init();
     b.print_board();
 
     // std::unique_ptr<Move> move1{new BasicMove{{0, 1}, {0, 3}, Piece::WhitePawn}};
@@ -98,8 +98,22 @@ int main() {
     //     b.print_board();
     // }
 
+    
+    // b.set_piece({1, 2}, Piece::BlackPawn);
+
+    // std::unique_ptr<PossibleMove> pm3 = mf.get_all_moves(ChessColour::White);
+
+    // for (auto& m : pm3->moves) {
+    //     m->execute(b, s);
+    //     b.print_board();
+    //     s.print_status();
+    //     m->undo(b, s);
+    //     b.print_board();
+    //     s.print_status();
+    // }
+
     // b.reset_piece({0, 1});
-    // std::unique_ptr<Move> move1{new BasicMove{{0, 0}, {0, 2}, Piece::WhiteRook, UniqueMove::UnableWhiteQueenSideCastling}};
+    // std::unique_ptr<Move> move1{new BasicMove{{0, 0}, {0, 4}, Piece::WhiteRook, UniqueMove::UnableWhiteQueenSideCastling}};
     // move1->execute(b, s);
     // b.print_board();
     // s.print_status();
@@ -107,11 +121,38 @@ int main() {
     // b.print_board();
     // s.print_status();
 
-    b.set_piece({1, 2}, Piece::BlackPawn);
+    // std::cout << mf.is_move_safe(*move1) << std::endl;
 
-    std::unique_ptr<PossibleMove> pm3 = mf.get_all_moves(ChessColour::White);
+    b.set_piece({7, 2}, Piece::BlackQueen);
 
-    for (auto& m : pm3->moves) {
+    b.set_piece({0, 0}, Piece::WhiteRook);
+    // b.set_piece({1, 0}, Piece::WhiteKnight);
+    // b.set_piece({2, 0}, Piece::WhiteBishop);
+    // b.set_piece({3, 0}, Piece::WhiteQueen);
+    b.set_piece({4, 0}, Piece::WhiteKing);
+    // b.set_piece({5, 0}, Piece::WhiteBishop);
+    // b.set_piece({6, 0}, Piece::WhiteKnight);
+    b.set_piece({7, 0}, Piece::WhiteRook);
+
+    b.set_piece({0, 7}, Piece::BlackRook);
+    // b.set_piece({1, 7}, Piece::BlackKnight);
+    // b.set_piece({2, 7}, Piece::BlackBishop);
+    // b.set_piece({3, 7}, Piece::BlackQueen);
+    b.set_piece({4, 7}, Piece::BlackKing);
+    // b.set_piece({5, 7}, Piece::BlackBishop);
+    // b.set_piece({6, 7}, Piece::BlackKnight);
+    b.set_piece({7, 7}, Piece::BlackRook);
+
+    b.print_board();
+    s.print_status();
+
+    std::unique_ptr<PossibleMove> pm5 = mf.get_moves({7, 0});
+    pm5->moves[1]->execute(b, s);
+    b.print_board();
+    s.print_status();
+    
+    std::unique_ptr<PossibleMove> pm4 = mf.get_moves({4, 0});
+    for (auto& m : pm4->moves) {
         m->execute(b, s);
         b.print_board();
         s.print_status();
@@ -119,5 +160,9 @@ int main() {
         b.print_board();
         s.print_status();
     }
+
+    pm5->moves[1]->undo(b, s);
+    b.print_board();
+    s.print_status();
 
 }
