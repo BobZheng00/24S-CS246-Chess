@@ -1,19 +1,29 @@
 #include "observer.h"
 
 TextDisplay::TextDisplay() {
-    board->attach(this);
+    _p_board_subj->attach(this);
 }
 
-void update_board(std::unique_ptr<std::vector<BoardPosn>>, Result) const {
-    Board::print_board();
+void TextDisplay::update_board(std::unique_ptr<std::vector<BoardPosn>>, Result) const {
+    for (int rank = 0; rank < 8; ++rank) {
+        std::cout << rank+1 << ' ';
+        for (int file = 0; file < 8; ++file) {
+            std::optional<Piece> piece = get_piece(file, rank);
+            if (!piece) {
+                std::cout << "  ";
+            } else {
+                std::cout << piece.value()
+                std::cout << " ";
+            }
+        }
+    }
 }
 
-GraphicDisplay::GraphicDisplay() {
-    board->attach(this);
-    _window = Xwindow(4000, 4000);
+GraphicDisplay::GraphicDisplay() : _window{Xwindow(4000, 4000)} {
+    _p_board_subj->attach(this);
 }
 
-void update_board(std::unique_ptr<std::vector<BoardPosn>>, Result) const {
+void GraphicDisplay::update_board(std::unique_ptr<std::vector<BoardPosn>>, Result) const {
     const int squareSize = 500;
     const int boardSize = 8;
     _window.fillRectangle(0, 0, squareSize * boardSize, squareSize * boardSize, Xwindow::White);
