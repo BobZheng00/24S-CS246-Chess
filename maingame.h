@@ -10,7 +10,7 @@ public:
     void run();
 
 private:
-    void handle_player_sign_up();
+    void handle_player_sign_up(std::string command);
     void handle_resign();
     void handle_set_up();
     void handle_move();
@@ -21,4 +21,11 @@ private:
     ChessGame _game;
     double white_score;
     double black_score;
+
+    std::string currentTurn;
+    std::string white_player_type;
+    std::string black_player_type;
+
+    bool gameRunning;
+    bool inSetupMode;
 };
