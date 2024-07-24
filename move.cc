@@ -46,6 +46,7 @@ UniqueMove get_unable_all_castling(ChessColour colour) {
 }
 
 void handle_execution_status_change(const Move* move, UniqueMove move_type, Status& status) {
+    status.next_turn();
     switch (move_type) {
     case UniqueMove::BlackDoublePawnPush:
         status.black_last_double_pawn_push = std::make_unique<BoardPosn>(move->to.file, move->to.rank);
@@ -76,9 +77,17 @@ void handle_execution_status_change(const Move* move, UniqueMove move_type, Stat
     default:
         break;
     }
+
+    if (move_type != UniqueMove::BlackDoublePawnPush) {
+        status.black_last_double_pawn_push = std::make_unique<BoardPosn>(-1, -1);
+    }
+    if (move_type != UniqueMove::WhiteDoublePawnPush) {
+        status.white_last_double_pawn_push = std::make_unique<BoardPosn>(-1, -1);
+    }
 }
 
 void handle_undo_status_change(const Move* move, UniqueMove move_type, Status& status) {
+    status.next_turn();
     switch (move_type) {
     case UniqueMove::BlackDoublePawnPush:
         status.black_last_double_pawn_push = std::make_unique<BoardPosn>(-1, -1);
@@ -215,10 +224,10 @@ void MoveHistory::undo_last_move(Board& board, Status& status) {
     }
     moves.top()->undo(board, status);
     moves.pop();
-    if (moves.top()->move_type == UniqueMove::BlackDoublePawnPush) {
+    if (!moves.empty() && moves.top()->move_type == UniqueMove::BlackDoublePawnPush) {
         status.black_last_double_pawn_push = std::make_unique<BoardPosn>(moves.top()->to.file, moves.top()->to.rank);
     }
-    else if (moves.top()->move_type == UniqueMove::WhiteDoublePawnPush) {
+    else if (!moves.empty() && moves.top()->move_type == UniqueMove::WhiteDoublePawnPush) {
         status.white_last_double_pawn_push = std::make_unique<BoardPosn>(moves.top()->to.file, moves.top()->to.rank);
     }
     return;

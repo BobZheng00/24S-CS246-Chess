@@ -3,6 +3,7 @@
 #include "move.h"
 #include "status.h"
 #include "movefactory.h"
+#include "chessgame.h"
 #include <iostream>
 #include <memory>
 #include <optional>
@@ -165,19 +166,47 @@ int main() {
     // b.print_board();
     // s.print_status();
 
-    b.set_piece({2, 7}, Piece::BlackKing);
+    // b.set_piece({2, 7}, Piece::BlackKing);
 
-    b.set_piece({1, 7}, Piece::BlackRook);
-    b.set_piece({3, 7}, Piece::BlackRook);
-    b.set_piece({2, 5}, Piece::WhiteQueen);
+    // b.set_piece({1, 7}, Piece::BlackRook);
+    // b.set_piece({3, 7}, Piece::BlackRook);
+    // b.set_piece({2, 5}, Piece::WhiteQueen);
 
 
-    s.cur_turn = ChessColour::Black;
+    // s.cur_turn = ChessColour::Black;
 
-    b.print_board();
-    s.print_status();
+    // b.print_board();
+    // s.print_status();
 
-    std::cout << mf.is_in_check(ChessColour::Black) << std::endl;
-    std::cout << mf.is_checkmated() << std::endl;
-    std::cout << mf.is_stalemated() << std::endl;
+    // std::cout << mf.is_in_check(ChessColour::Black) << std::endl;
+    // std::cout << mf.is_checkmated() << std::endl;
+    // std::cout << mf.is_stalemated() << std::endl;
+
+    ChessGame cg;
+    cg.regular_init();
+
+    // cg.set_piece({2, 7}, Piece::BlackKing);
+
+    // cg.set_piece({1, 7}, Piece::BlackRook);
+    // cg.set_piece({3, 7}, Piece::BlackRook);
+    // cg.set_piece({0, 0}, Piece::WhiteQueen);
+    // cg.set_piece({2, 0}, Piece::WhiteKing);
+
+    cg._board.print_board();
+    cg._status.print_status();
+    std::cout << cg.execute_move({0, 1}, {0, 3}) << std::endl;
+    cg._board.print_board();
+    cg._status.print_status();
+    std::cout << cg.execute_move({1, 6}, {1, 4}) << std::endl;
+    cg._board.print_board();
+    cg._status.print_status();
+    // std::cout << cg.is_valid_setup() << std::endl;
+
+    cg._status.move_history->undo_last_move(cg._board, cg._status);
+    cg._board.print_board();
+    cg._status.print_status();
+    cg._status.move_history->undo_last_move(cg._board, cg._status);
+    cg._board.print_board();
+    cg._status.print_status();
+    cg._status.move_history->undo_last_move(cg._board, cg._status);
 }
