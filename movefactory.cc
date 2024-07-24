@@ -55,6 +55,68 @@ bool MoveFactory::is_move_safe(const Move& move) const {
     return true;
 }
 
+bool MoveFactory::is_capture_valuable(const CaptureMove& move) const {
+    if (is_move_safe(move)) return true;
+    if (get_piece_value(move.captured_piece.type) > get_piece_value(move.moved_piece.type)) return true;
+    return false;
+}
+
+bool MoveFactory::is_in_check(ChessColour colour) const {
+    auto king_posn = _board.get_king_posn(colour);
+    auto all_opponent_moves = get_all_moves(opposite_colour(colour));
+
+    for (auto& opponent_move : all_opponent_moves->moves) {
+        if (opponent_move->to == king_posn) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool MoveFactory::is_checkmated() const {
+    if (!is_in_check(_status.cur_turn)) return false;
+
+    if (_king_moves(_board.get_king_posn(_status.cur_turn))->moves.size() > 0) return false;
+
+    auto all_moves = get_all_moves(_status.cur_turn);
+
+    for (auto& move : all_moves->moves) {
+        Board tmp_board = _board;
+        Status tmp_status = _status;
+
+        move->execute(tmp_board, tmp_status);
+
+        MoveFactory tmp_factory{tmp_board, tmp_status};
+        if (!tmp_factory.is_in_check(_status.cur_turn)) {
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+bool MoveFactory::is_stalemated() const {
+    if (is_in_check(_status.cur_turn)) return false;
+
+    if (_king_moves(_board.get_king_posn(_status.cur_turn))->moves.size() > 0) return false;
+
+    auto all_moves = get_all_moves(_status.cur_turn);
+
+    for (auto& move : all_moves->moves) {
+        Board tmp_board = _board;
+        Status tmp_status = _status;
+
+        move->execute(tmp_board, tmp_status);
+
+        MoveFactory tmp_factory{tmp_board, tmp_status};
+        if (!tmp_factory.is_in_check(_status.cur_turn)) {
+            return false;
+        }
+    }
+    
+    return true;
+}
+
 std::unique_ptr<PossibleMove> MoveFactory::get_all_moves(ChessColour colour) const {
     auto pm = std::make_unique<PossibleMove>();
     for (int i = 0; i < 8; ++i) {
@@ -372,3 +434,5 @@ std::unique_ptr<PossibleMove> MoveFactory::_king_moves(const BoardPosn& posn) co
     
     return pm;
 }
+
+
