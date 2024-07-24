@@ -48,6 +48,7 @@ void TextDisplay::update_board(std::unique_ptr<std::vector<BoardPosn>>, Result) 
 
 GraphicDisplay::GraphicDisplay() : _window{Xwindow(4000, 4000)} {
     _p_board_subj->attach(this);
+    
 }
 
 void GraphicDisplay::update_board(std::unique_ptr<std::vector<BoardPosn>>, Result) const {
