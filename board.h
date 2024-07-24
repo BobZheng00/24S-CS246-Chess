@@ -16,6 +16,8 @@ class BoardSubject {
 public:
     void attach(std::shared_ptr<BoardObserver>);
     void detach(std::shared_ptr<BoardObserver>);
+    virtual std::optional<Piece> get_piece(int file, int rank) const = 0;
+    virtual std::optional<Piece> get_piece(const BoardPosn& posn) const = 0;
     void notify_observers(std::unique_ptr<std::vector<BoardPosn>>, Result) const;
     virtual ~BoardSubject() = default;
 };
@@ -30,8 +32,8 @@ public:
     void set_standard_position();
     BoardPosn get_king_posn(ChessColour colour) const;
 
-    std::optional<Piece> get_piece(int file, int rank) const;
-    std::optional<Piece> get_piece(const BoardPosn& posn) const;
+    virtual std::optional<Piece> get_piece(int file, int rank) const override;
+    virtual std::optional<Piece> get_piece(const BoardPosn& posn) const override;
     void set_piece(int file, int rank, const Piece& piece);
     void set_piece(const BoardPosn& posn, const Piece& piece);
     void reset_piece(int file, int rank);
