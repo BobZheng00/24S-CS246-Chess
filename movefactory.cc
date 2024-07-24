@@ -73,6 +73,16 @@ bool MoveFactory::is_in_check(ChessColour colour) const {
     return false;
 }
 
+bool MoveFactory::will_move_result_check(const Move& move) const {
+    Board tmp_board = _board;
+    Status tmp_status = _status;
+
+    move.execute(tmp_board, tmp_status);
+
+    MoveFactory tmp_factory{tmp_board, tmp_status};
+    return tmp_factory.is_in_check(move.moved_piece.colour);
+}
+
 bool MoveFactory::is_checkmated() const {
     if (!is_in_check(_status.cur_turn)) return false;
 
@@ -275,7 +285,7 @@ std::unique_ptr<PossibleMove> MoveFactory::_pawn_moves(const BoardPosn& posn) co
     // promotion case 
     if (on_nth_rank(_board.get_piece(posn).value().colour, posn, 7)) {
         auto insert_valid_posn = [this, posn](PossibleMove* pm, const BoardPosn& cur_posn, bool should_capture) {
-            std::cout << cur_posn.file << ", " << cur_posn.rank << std::endl;
+            // std::cout << cur_posn.file << ", " << cur_posn.rank << std::endl;
             if (!cur_posn.on_board()) {
                 return false;
             } // promote to Queen by default
@@ -299,7 +309,7 @@ std::unique_ptr<PossibleMove> MoveFactory::_pawn_moves(const BoardPosn& posn) co
     }
     else {
         auto insert_valid_posn = [this, posn](PossibleMove* pm, const BoardPosn& cur_posn, bool should_capture, bool should_enpassant) {
-            std::cout << cur_posn.file << ", " << cur_posn.rank << std::endl;
+            // std::cout << cur_posn.file << ", " << cur_posn.rank << std::endl;
             if (!cur_posn.on_board()) {
                 return false;
             } // Basic Move

@@ -1,4 +1,8 @@
 #include "player.h"
+#include "movefactory.h"
+#include "chessgame.h"
+#include "move.h"
+#include <memory>
 #include <cstdlib>
 #include <ctime>
 

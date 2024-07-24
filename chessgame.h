@@ -1,3 +1,5 @@
+#pragma once
+
 #include "board.h"
 #include "status.h"
 #include "movefactory.h"
@@ -10,6 +12,7 @@ public:
     ChessGame();
 
     void regular_init();
+    void setup_init();
     void reset(); 
 
     // for setup stage
@@ -24,7 +27,7 @@ public:
     // move execution and undoing must be called by chessgame
     bool execute_move(const BoardPosn& from, const BoardPosn& to, std::optional<PieceType> opt_promotion = std::nullopt); // for computer and player to call
     void undo_move(); // call move_history.undo_last_move
-private:
+// private:
     Status _status;
     Board _board;
     MoveFactory _move_factory;

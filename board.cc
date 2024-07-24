@@ -3,11 +3,11 @@
 #include "status.h"
 #include "observer.h"
 
-void BoardSubject::attach(std::shared_ptr<BoardObserver> o) {
+void BoardSubject::attach(BoardObserver* o) {
     observers.emplace_back(o);
 }
 
-void BoardSubject::detach(std::shared_ptr<BoardObserver> o) {
+void BoardSubject::detach(BoardObserver* o) {
     for (auto it = observers.begin(); it != observers.end(); ++it) {
         if (*it == o) {
             observers.erase(it);

@@ -5,6 +5,8 @@
 #include "status.h"
 #include <vector>
 
+bool on_nth_rank(ChessColour colour, const BoardPosn& posn, int rank);
+
 class MoveFactory {
 public:
     MoveFactory(const Board& board, const Status& status): _board{board}, _status{status} {}
@@ -13,6 +15,7 @@ public:
     
     bool is_move_safe(const Move& move) const;
     bool is_capture_valuable(const CaptureMove& move) const;
+    bool will_move_result_check(const Move& move) const;
     bool is_in_check(ChessColour colour) const;
     bool is_checkmated() const;
     bool is_stalemated() const;

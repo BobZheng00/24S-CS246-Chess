@@ -1,6 +1,6 @@
-#include "chessgame.h"
 #include "move.h"
-#include "movefactory.h"
+
+class ChessGame;
 
 class BasePlayer {
 public:
@@ -18,29 +18,29 @@ class ComputerPlayer: public BasePlayer {
 public:
     virtual RawMove get_move() const = 0;
 private:
-    ChessGame& game;
+    ChessGame* game;
 };
 
 class ComputerLv1: public ComputerPlayer {
 public:
-    ComputerLv1(ChessGame& game);
+    ComputerLv1(ChessGame* game);
     RawMove get_move() const override;
 };
 
 class ComputerLv2: public ComputerPlayer {
 public:
-    ComputerLv2(ChessGame& game);
+    ComputerLv2(ChessGame* game);
     RawMove get_move() const override;
 };
 
 class ComputerLv3: public ComputerPlayer { 
 public:
-    ComputerLv3(ChessGame& game);
+    ComputerLv3(ChessGame* game);
     RawMove get_move() const override;
 };
 
 class ComputerLv4: public ComputerPlayer {
 public:
-    ComputerLv4(ChessGame& game);
+    ComputerLv4(ChessGame* game);
     RawMove get_move() const override;
 };
