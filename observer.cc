@@ -1,3 +1,4 @@
+#include <iostream>
 #include "observer.h"
 
 TextDisplay::TextDisplay() {
@@ -5,18 +6,44 @@ TextDisplay::TextDisplay() {
 }
 
 void TextDisplay::update_board(std::unique_ptr<std::vector<BoardPosn>>, Result) const {
-    for (int rank = 0; rank < 8; ++rank) {
+    for (int rank = 7; rank >= 0; --rank) {
         std::cout << rank+1 << ' ';
         for (int file = 0; file < 8; ++file) {
-            std::optional<Piece> piece = get_piece(file, rank);
-            if (!piece) {
+            std::optional<Piece> piece = Board::get_piece(file, rank);
+            if (piece) {
+                if (piece == Piece::WhiteKing) {
+                    std::cout << 'K ';
+                } else if (piece == Piece::WhiteQueen) {
+                    std::cout << 'Q ';
+                } else if (piece == Piece::WhiteRook) {
+                    std::cout << 'R ';
+                } else if (piece == Piece::WhiteBishop) {
+                    std::cout << 'B ';
+                } else if (piece == Piece::WhiteKnight) {
+                    std::cout << 'N ';
+                } else if (piece == Piece::WhitePawn) {
+                    std::cout << 'P ';
+                } else if (piece == Piece::BlackKing) {
+                    std::cout << 'k ';
+                } else if (piece == Piece::BlackQueen) {
+                    std::cout << 'q ';
+                } else if (piece == Piece::BlackRook) {
+                    std::cout << 'r ';
+                } else if (piece == Piece::BlackBishop) {
+                    std::cout << 'b ';
+                } else if (piece == Piece::BlackKnight) {
+                    std::cout << 'n ';
+                } else if (piece == Piece::BlackPawn) {
+                    std::cout << 'p ';
+                }
+            } 
+            else {
                 std::cout << "  ";
-            } else {
-                std::cout << piece.value()
-                std::cout << " ";
             }
         }
+        std::cout << std::endl;
     }
+    std::cout << "  a b c d e f g h" << std::endl << std::endl;
 }
 
 GraphicDisplay::GraphicDisplay() : _window{Xwindow(4000, 4000)} {

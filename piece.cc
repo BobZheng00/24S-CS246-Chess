@@ -19,3 +19,7 @@ const Piece Piece::BlackPawn(PieceType::Pawn, ChessColour::Black);
 char Piece::to_char() const {
     return to_underlying(colour)? to_underlying(type) : tolower(to_underlying(type));
 }
+
+ChessColour opposite_colour(ChessColour colour) {
+    return static_cast<ChessColour>(!static_cast<bool>(colour));
+}

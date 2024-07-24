@@ -19,6 +19,8 @@ enum class ChessColour : bool {
     Black = false
 };
 
+ChessColour opposite_colour(ChessColour colour);
+
 struct Piece {
     PieceType type;
     ChessColour colour;

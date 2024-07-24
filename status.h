@@ -5,6 +5,7 @@
 
 class MoveHistory;
 struct BoardPosn; 
+enum class UniqueMove;
 
 enum class Result {
     Unstarted,
@@ -19,8 +20,12 @@ enum class Result {
 
 struct Status {
     Status();
+    Status(const Status& other);
     void clear();
     void print_status() const;
+    bool can_castle_kingside(ChessColour colour) const;
+    bool can_castle_queenside(ChessColour colour) const;
+    UniqueMove king_unable_castling(ChessColour colour) const;
     ChessColour next_turn();
 
     Result result;

@@ -31,9 +31,44 @@ std::unique_ptr<PossibleMove> MoveFactory::get_moves(const BoardPosn& posn) cons
             return _knight_moves(posn);
         case PieceType::Pawn:
             return _pawn_moves(posn);
+        case PieceType::King:
+            return _king_moves(posn);
         default:
             return std::make_unique<PossibleMove>();
     }
+}
+
+bool MoveFactory::is_move_safe(const Move& move) const {
+    Board tmp_board = _board;
+    Status tmp_status = _status;
+
+    move.execute(tmp_board, tmp_status);
+
+    MoveFactory tmp_factory{tmp_board, tmp_status};
+    auto all_opponent_moves = tmp_factory.get_all_moves(opposite_colour(move.moved_piece.colour));
+
+    for (auto& opponent_move : all_opponent_moves->moves) {
+        if (opponent_move->to == move.to) {
+            return false;
+        }
+    }
+    return true;
+}
+
+std::unique_ptr<PossibleMove> MoveFactory::get_all_moves(ChessColour colour) const {
+    auto pm = std::make_unique<PossibleMove>();
+    for (int i = 0; i < 8; ++i) {
+        for (int j = 0; j < 8; ++j) {
+            if (_board.get_piece({i, j}) == std::nullopt) continue;
+            if (_board.get_piece({i, j}).value().colour == colour && _board.get_piece({i, j}).value().type != PieceType::King) {
+                auto tmp = get_moves({i, j});
+                for (auto& move : tmp->moves) {
+                    pm->add_move(std::move(move));
+                }
+            }
+        }
+    }
+    return pm;
 }
 
 void MoveFactory::_diagonal_moves(PossibleMove* pm, const BoardPosn& posn, UniqueMove move_type) const {
@@ -264,18 +299,76 @@ std::unique_ptr<PossibleMove> MoveFactory::_pawn_moves(const BoardPosn& posn) co
     return pm;
 }
 
-// std::unique_ptr<PossibleMove> MoveFactory::_king_moves(const BoardPosn& posn) const {
-//     auto pm = std::make_unique<PossibleMove>();
-//     if (_status.white_can_castle_queenside && posn == BoardPosn{4, 0} && _board.get_piece(posn) == Piece::WhiteKing) {
+std::unique_ptr<PossibleMove> MoveFactory::_king_moves(const BoardPosn& posn) const {
+    auto pm = std::make_unique<PossibleMove>();
+    BoardPosn tmp = posn;
 
-//     }
-//     else if (_status.white_can_castle_kingside && posn == BoardPosn{4, 0} && _board.get_piece(posn) == Piece::WhiteKing) {
-//     }
-//     else if (_status.black_can_castle_queenside && posn == BoardPosn{4, 7} && _board.get_piece(posn) == Piece::BlackKing) {
-//     }
-//     else if (_status.black_can_castle_kingside && posn == BoardPosn{4, 7} && _board.get_piece(posn) == Piece::BlackKing) {
-//     } else {
-//     }
+    // castling
+    if (_status.can_castle_queenside(_board.get_piece(posn).value().colour) &&
+        _board.get_piece(tmp+BoardPosn{-1, 0}) == std::nullopt &&
+        _board.get_piece(tmp+BoardPosn{-2, 0}) == std::nullopt &&
+        _board.get_piece(tmp+BoardPosn{-3, 0}) == std::nullopt &&
+        is_move_safe(BasicMove{posn, tmp+BoardPosn{0, 0}, _board.get_piece(posn).value()}) &&
+        is_move_safe(BasicMove{posn, tmp+BoardPosn{-1, 0}, _board.get_piece(posn).value()}) &&
+        is_move_safe(BasicMove{posn, tmp+BoardPosn{-2, 0}, _board.get_piece(posn).value()})) {
+        if (!_status.can_castle_kingside(_board.get_piece(posn).value().colour)){
+            std::unique_ptr<Move> move{new CastlingMove{posn, tmp+BoardPosn{-2, 0}, _board.get_piece(posn).value(), tmp+BoardPosn{-4, 0}, tmp+BoardPosn{-1, 0}, get_unable_queenside_castling(_board.get_piece(posn).value().colour)}};
+            pm->add_move(std::move(move));
+        } 
+        else {
+            std::unique_ptr<Move> move{new CastlingMove{posn, tmp+BoardPosn{-2, 0}, _board.get_piece(posn).value(), tmp+BoardPosn{-4, 0}, tmp+BoardPosn{-1, 0}, get_unable_all_castling(_board.get_piece(posn).value().colour)}};
+            pm->add_move(std::move(move));
+        }
+    }
     
-//     return pm;
-// }
+    if (_status.can_castle_kingside(_board.get_piece(posn).value().colour) &&
+        _board.get_piece(tmp+BoardPosn{1, 0}) == std::nullopt &&
+        _board.get_piece(tmp+BoardPosn{2, 0}) == std::nullopt &&
+        is_move_safe(BasicMove{posn, tmp+BoardPosn{0, 0}, _board.get_piece(posn).value()}) &&
+        is_move_safe(BasicMove{posn, tmp+BoardPosn{1, 0}, _board.get_piece(posn).value()}) &&
+        is_move_safe(BasicMove{posn, tmp+BoardPosn{2, 0}, _board.get_piece(posn).value()})) {
+        if (!_status.can_castle_queenside(_board.get_piece(posn).value().colour)){
+            std::unique_ptr<Move> move{new CastlingMove{posn, tmp+BoardPosn{2, 0}, _board.get_piece(posn).value(), tmp+BoardPosn{3, 0}, tmp+BoardPosn{1, 0}, get_unable_kingside_castling(_board.get_piece(posn).value().colour)}};
+            pm->add_move(std::move(move));
+        } 
+        else {
+            std::unique_ptr<Move> move{new CastlingMove{posn, tmp+BoardPosn{2, 0}, _board.get_piece(posn).value(), tmp+BoardPosn{3, 0}, tmp+BoardPosn{1, 0}, get_unable_all_castling(_board.get_piece(posn).value().colour)}};
+            pm->add_move(std::move(move));
+        }
+    }
+
+    // normal moves
+    auto insert_valid_posn = [this, posn](PossibleMove* pm, const BoardPosn& cur_posn) {
+        if (!cur_posn.on_board()) {
+            return;
+        }
+        else if (this->_board.get_piece(cur_posn) == std::nullopt) {
+            std::unique_ptr<Move> move{new BasicMove{posn, cur_posn, this->_board.get_piece(posn).value(), _status.king_unable_castling(_board.get_piece(posn).value().colour)}};
+            if (is_move_safe(*move)) {
+                pm->add_move(std::move(move));
+            }
+            return;
+        }
+        else if (this->_board.get_piece(cur_posn).value().colour != this->_board.get_piece(posn).value().colour) {
+            std::unique_ptr<Move> move{new CaptureMove{posn, cur_posn, this->_board.get_piece(posn).value(), this->_board.get_piece(cur_posn).value(), cur_posn, _status.king_unable_castling(_board.get_piece(posn).value().colour)}};
+            if (is_move_safe(*move)) {
+                pm->add_move(std::move(move));
+            }
+            return;
+        }
+        else {
+            return;
+        }
+    };
+    
+    insert_valid_posn(pm.get(), tmp+BoardPosn{1, 0});
+    insert_valid_posn(pm.get(), tmp+BoardPosn{1, 1});
+    insert_valid_posn(pm.get(), tmp+BoardPosn{0, 1});
+    insert_valid_posn(pm.get(), tmp+BoardPosn{-1, 1});
+    insert_valid_posn(pm.get(), tmp+BoardPosn{-1, 0});
+    insert_valid_posn(pm.get(), tmp+BoardPosn{-1, -1});
+    insert_valid_posn(pm.get(), tmp+BoardPosn{0, -1});
+    insert_valid_posn(pm.get(), tmp+BoardPosn{1, -1});
+    
+    return pm;
+}

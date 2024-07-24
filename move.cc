@@ -12,6 +12,39 @@ std::string BoardPosn::to_string() const {
     return std::string(1, 'a'+file) + std::to_string(rank+1);
 }
 
+UniqueMove get_unable_kingside_castling(ChessColour colour) {
+    switch (colour) {
+    case ChessColour::White:
+        return UniqueMove::UnableWhiteKingSideCastling;
+    case ChessColour::Black:
+        return UniqueMove::UnableBlackKingSideCastling;
+    default:
+        return UniqueMove::None;
+    }
+}
+
+UniqueMove get_unable_queenside_castling(ChessColour colour) {
+    switch (colour) {
+    case ChessColour::White:
+        return UniqueMove::UnableWhiteQueenSideCastling;
+    case ChessColour::Black:
+        return UniqueMove::UnableBlackQueenSideCastling;
+    default:
+        return UniqueMove::None;
+    }
+}
+
+UniqueMove get_unable_all_castling(ChessColour colour) {
+    switch (colour) {
+    case ChessColour::White:
+        return UniqueMove::UnableAllWhiteCastling;
+    case ChessColour::Black:
+        return UniqueMove::UnableAllBlackCastling;
+    default:
+        return UniqueMove::None;
+    }
+}
+
 void handle_execution_status_change(const Move* move, UniqueMove move_type, Status& status) {
     switch (move_type) {
     case UniqueMove::BlackDoublePawnPush:
