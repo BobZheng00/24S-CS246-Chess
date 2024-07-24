@@ -14,6 +14,8 @@ enum class PieceType : char {
     Pawn = 'P'
 };
 
+int get_piece_value(PieceType type);
+
 enum class ChessColour : bool {
     White = true,
     Black = false

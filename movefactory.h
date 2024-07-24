@@ -13,8 +13,9 @@ public:
     
     bool is_move_safe(const Move& move) const;
     bool is_capture_valuable(const CaptureMove& move) const;
-    bool is_mated() const;
-    bool is_drawn() const;
+    bool is_in_check(ChessColour colour) const;
+    bool is_checkmated() const;
+    bool is_stalemated() const;
 // private:
     void _diagonal_moves(PossibleMove* pm, const BoardPosn& posn, UniqueMove move_type = UniqueMove::None) const;
     void _linear_moves(PossibleMove* pm, const BoardPosn& posn, UniqueMove move_type = UniqueMove::None) const;

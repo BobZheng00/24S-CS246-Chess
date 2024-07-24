@@ -123,46 +123,61 @@ int main() {
 
     // std::cout << mf.is_move_safe(*move1) << std::endl;
 
-    b.set_piece({7, 2}, Piece::BlackQueen);
+    // b.set_piece({7, 2}, Piece::BlackQueen);
 
-    b.set_piece({0, 0}, Piece::WhiteRook);
-    // b.set_piece({1, 0}, Piece::WhiteKnight);
-    // b.set_piece({2, 0}, Piece::WhiteBishop);
-    // b.set_piece({3, 0}, Piece::WhiteQueen);
-    b.set_piece({4, 0}, Piece::WhiteKing);
-    // b.set_piece({5, 0}, Piece::WhiteBishop);
-    // b.set_piece({6, 0}, Piece::WhiteKnight);
-    b.set_piece({7, 0}, Piece::WhiteRook);
+    // b.set_piece({0, 0}, Piece::WhiteRook);
+    // // b.set_piece({1, 0}, Piece::WhiteKnight);
+    // // b.set_piece({2, 0}, Piece::WhiteBishop);
+    // // b.set_piece({3, 0}, Piece::WhiteQueen);
+    // b.set_piece({4, 0}, Piece::WhiteKing);
+    // // b.set_piece({5, 0}, Piece::WhiteBishop);
+    // // b.set_piece({6, 0}, Piece::WhiteKnight);
+    // b.set_piece({7, 0}, Piece::WhiteRook);
 
-    b.set_piece({0, 7}, Piece::BlackRook);
-    // b.set_piece({1, 7}, Piece::BlackKnight);
-    // b.set_piece({2, 7}, Piece::BlackBishop);
-    // b.set_piece({3, 7}, Piece::BlackQueen);
-    b.set_piece({4, 7}, Piece::BlackKing);
-    // b.set_piece({5, 7}, Piece::BlackBishop);
-    // b.set_piece({6, 7}, Piece::BlackKnight);
-    b.set_piece({7, 7}, Piece::BlackRook);
+    // b.set_piece({0, 7}, Piece::BlackRook);
+    // // b.set_piece({1, 7}, Piece::BlackKnight);
+    // // b.set_piece({2, 7}, Piece::BlackBishop);
+    // // b.set_piece({3, 7}, Piece::BlackQueen);
+    // b.set_piece({4, 7}, Piece::BlackKing);
+    // // b.set_piece({5, 7}, Piece::BlackBishop);
+    // // b.set_piece({6, 7}, Piece::BlackKnight);
+    // b.set_piece({7, 7}, Piece::BlackRook);
 
-    b.print_board();
-    s.print_status();
+    // b.print_board();
+    // s.print_status();
 
-    std::unique_ptr<PossibleMove> pm5 = mf.get_moves({7, 0});
-    pm5->moves[1]->execute(b, s);
-    b.print_board();
-    s.print_status();
+    // std::unique_ptr<PossibleMove> pm5 = mf.get_moves({7, 0});
+    // pm5->moves[1]->execute(b, s);
+    // b.print_board();
+    // s.print_status();
     
-    std::unique_ptr<PossibleMove> pm4 = mf.get_moves({4, 0});
-    for (auto& m : pm4->moves) {
-        m->execute(b, s);
-        b.print_board();
-        s.print_status();
-        m->undo(b, s);
-        b.print_board();
-        s.print_status();
-    }
+    // std::unique_ptr<PossibleMove> pm4 = mf.get_moves({4, 0});
+    // for (auto& m : pm4->moves) {
+    //     m->execute(b, s);
+    //     b.print_board();
+    //     s.print_status();
+    //     m->undo(b, s);
+    //     b.print_board();
+    //     s.print_status();
+    // }
 
-    pm5->moves[1]->undo(b, s);
+    // pm5->moves[1]->undo(b, s);
+    // b.print_board();
+    // s.print_status();
+
+    b.set_piece({2, 7}, Piece::BlackKing);
+
+    b.set_piece({1, 7}, Piece::BlackRook);
+    b.set_piece({3, 7}, Piece::BlackRook);
+    b.set_piece({2, 5}, Piece::WhiteQueen);
+
+
+    s.cur_turn = ChessColour::Black;
+
     b.print_board();
     s.print_status();
 
+    std::cout << mf.is_in_check(ChessColour::Black) << std::endl;
+    std::cout << mf.is_checkmated() << std::endl;
+    std::cout << mf.is_stalemated() << std::endl;
 }

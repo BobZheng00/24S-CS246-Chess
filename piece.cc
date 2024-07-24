@@ -23,3 +23,21 @@ char Piece::to_char() const {
 ChessColour opposite_colour(ChessColour colour) {
     return static_cast<ChessColour>(!static_cast<bool>(colour));
 }
+
+int get_piece_value(PieceType type) {
+    switch (type) {
+        case PieceType::King:
+            return 10;
+        case PieceType::Queen:
+            return 9;
+        case PieceType::Rook:
+            return 5;
+        case PieceType::Bishop:
+            return 3;
+        case PieceType::Knight:
+            return 3;
+        case PieceType::Pawn:
+            return 1;
+    }
+    return 0;
+}
