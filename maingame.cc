@@ -72,7 +72,7 @@ std::unique_ptr<BasePlayer> create_player(const std::string &playerType, ChessGa
 
 //----------------------------------helper func end----------------------------------
 
-MainGame::MainGame(): _p1{nullptr}, _p2{nullptr}, _game{}, _text_observer{nullptr}, _graphics_observer{nullptr}, white_score{0}, black_score{0}, currentTurn{"White"}, white_player_type{}, black_player_type{}, gameRunning{false}, inSetupMode{false} {
+MainGame::MainGame(): _p1{nullptr}, _p2{nullptr}, _game{}, _text_observer{nullptr}, _graphics_observer{nullptr}, white_score{0}, black_score{0}, currentTurn{"White"}, white_player_type{}, black_player_type{}{
     _text_observer = std::make_unique<TextDisplay>(_game.get_board_for_observers());
     _graphics_observer = std::make_unique<GraphicDisplay>(_game.get_board_for_observers());
 }
@@ -83,27 +83,27 @@ void MainGame::run() {
     // std::vector<BoardObserver *> observers;
     while (getline(std::cin, command))
     {
-        if (_game._status.result == Result::WhiteWin)
+        if (_game.get_status() == Result::WhiteWin)
         {
             std::cout << "White wins." << std::endl;
             break;
         }
-        if (_game._status.result == Result::BlackWin)
+        if (_game.get_status() == Result::BlackWin)
         {
             std::cout << "Black wins." << std::endl;
             break;
         }
-        if (_game._status.result == Result::Draw)
+        if (_game.get_status() == Result::Draw)
         {
             std::cout << "Game is a draw." << std::endl;
             break;
         }
         
-        if (_game._status.result == Result::WhiteInCheck)
+        if (_game.get_status() == Result::WhiteInCheck)
         {
             std::cout << "White is in check." << std::endl;
         }
-        if (_game._status.result == Result::BlackInCheck)
+        if (_game.get_status() == Result::BlackInCheck)
         {
             std::cout << "Black is in check." << std::endl;
         }
@@ -142,7 +142,7 @@ void MainGame::handle_player_sign_up(std::string command)
         _p1 = create_player(white_player_type, _game);
         _p2 = create_player(black_player_type, _game);
 
-        _game._status.result == Result::Unstarted;
+        _game.set_status(Result::Unstarted);
         currentTurn = "White";
     }
     catch (const std::invalid_argument &e)
@@ -153,7 +153,7 @@ void MainGame::handle_player_sign_up(std::string command)
 
 void MainGame::handle_resign()
 {
-    if ((_game._status.result == Result::Unstarted) || (_game._status.result == Result::Setup))
+    if ((_game.get_status() == Result::Unstarted) || (_game.get_status() == Result::Setup))
     {
         std::cout << "No game is currently running." << std::endl;
         return;
@@ -170,12 +170,12 @@ void MainGame::handle_resign()
 
 void MainGame::handle_set_up()
 {
-    if (((_game._status.result == Result::Unfinished) || (_game._status.result == Result::WhiteInCheck) || (_game._status.result == Result::BlackInCheck)))
+    if (((_game.get_status() == Result::Unfinished) || (_game.get_status() == Result::WhiteInCheck) || (_game.get_status() == Result::BlackInCheck)))
     {
         std::cout << "Cannot enter setup mode while a game is running." << std::endl;
         return;
     }
-    _game._status.result == Result::Setup;
+    _game.set_status(Result::Setup);
     std::cout << "Setup mode entered." << std::endl;
 
     std::string s2;
@@ -193,7 +193,7 @@ void MainGame::handle_set_up()
         {
             if (_game.is_valid_setup())
             {
-                _game._status.result = Result::Unfinished;
+                _game.set_status(Result::Unfinished);
                 break;
             }
         }
@@ -278,7 +278,7 @@ void MainGame::handle_set_up()
 
 void MainGame::handle_move(std::string command)
 {
-    if ((_game._status.result == Result::Unstarted) || (_game._status.result == Result::Setup))
+    if ((_game.get_status() == Result::Unstarted) || (_game.get_status() == Result::Setup))
     {
         std::cout << "No game is currently running." << std::endl;
         return;
