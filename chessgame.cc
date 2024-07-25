@@ -70,6 +70,10 @@ Result ChessGame::get_status() const {
     return _status.result;
 }
 
+BoardSubject* ChessGame::get_board_for_observers() {
+    return &_board;
+}
+
 bool ChessGame::execute_move(const BoardPosn& from, const BoardPosn& to, std::optional<PieceType> opt_promotion) {
     if (_status.result != Result::Unfinished && _status.result != Result::WhiteInCheck && _status.result != Result::BlackInCheck) {
         return false;
@@ -115,6 +119,7 @@ bool ChessGame::execute_move(const BoardPosn& from, const BoardPosn& to, std::op
                 _status.result = Result::Unfinished;
             }
             _status.move_history->push_move(std::move(move));
+            _board.notify_observers(nullptr, _status.result);
             return true;
         }
     }
@@ -143,4 +148,5 @@ void ChessGame::undo_move() {
     else {
         _status.result = Result::Unfinished;
     }
+    _board.notify_observers(nullptr, _status.result);
 }

@@ -9,7 +9,7 @@ bool on_nth_rank(ChessColour colour, const BoardPosn& posn, int rank);
 
 class MoveFactory {
 public:
-    MoveFactory(const Board& board, const Status& status): _board{board}, _status{status} {}
+    MoveFactory(const Board& board, const GameStatus& status): _board{board}, _status{status} {}
     std::unique_ptr<PossibleMove> get_moves(const BoardPosn& posn) const;
     std::unique_ptr<PossibleMove> get_all_moves(ChessColour colour) const; // does not include moves of king
     
@@ -20,8 +20,8 @@ public:
     bool is_checkmated() const;
     bool is_stalemated() const;
 // private:
-    void _diagonal_moves(PossibleMove* pm, const BoardPosn& posn, UniqueMove move_type = UniqueMove::None) const;
-    void _linear_moves(PossibleMove* pm, const BoardPosn& posn, UniqueMove move_type = UniqueMove::None) const;
+    void _diagonal_moves(PossibleMove* pm, const BoardPosn& posn, UniqueMove move_type = UniqueMove::Normal) const;
+    void _linear_moves(PossibleMove* pm, const BoardPosn& posn, UniqueMove move_type = UniqueMove::Normal) const;
     // We assert corresponding piece exists on the position for the following move generation
     std::unique_ptr<PossibleMove> _rook_moves(const BoardPosn& posn) const;
     std::unique_ptr<PossibleMove> _bishop_moves(const BoardPosn& posn) const;
@@ -30,5 +30,5 @@ public:
     std::unique_ptr<PossibleMove> _pawn_moves(const BoardPosn& posn) const;
     std::unique_ptr<PossibleMove> _king_moves(const BoardPosn& posn) const;
     const Board& _board;
-    const Status& _status;
+    const GameStatus& _status;
 };

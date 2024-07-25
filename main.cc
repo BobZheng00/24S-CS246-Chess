@@ -4,13 +4,14 @@
 #include "status.h"
 #include "movefactory.h"
 #include "chessgame.h"
+#include "observer.h"
 #include <iostream>
 #include <memory>
 #include <optional>
 
 int main() {
     Board b;
-    Status s;
+    GameStatus s;
     MoveFactory mf{b, s};
     // b.standard_init();
     b.print_board();
@@ -183,6 +184,9 @@ int main() {
     // std::cout << mf.is_stalemated() << std::endl;
 
     ChessGame cg;
+    std::unique_ptr<TextDisplay> td = std::make_unique<TextDisplay>(cg.get_board_for_observers());
+    
+
     cg.setup_init();
     cg.set_status(Result::Unfinished);
 
@@ -196,17 +200,17 @@ int main() {
     cg._board.print_board();
     cg._status.print_status();
     std::cout << cg.execute_move({0, 4}, {2, 6}) << std::endl;
-    cg._board.print_board();
+    // cg._board.print_board();
     cg._status.print_status();
     std::cout << cg.execute_move({2, 7}, {2, 6}) << std::endl;
-    cg._board.print_board();
+    // cg._board.print_board();
     cg._status.print_status();
 
     cg.undo_move();
-    cg._board.print_board();
+    // cg._board.print_board();
     cg._status.print_status();
     cg.undo_move();
-    cg._board.print_board();
+    // cg._board.print_board();
     cg._status.print_status();
     // std::cout << cg.execute_move({1, 6}, {1, 4}) << std::endl;
     // cg._board.print_board();

@@ -40,7 +40,7 @@ std::unique_ptr<PossibleMove> MoveFactory::get_moves(const BoardPosn& posn) cons
 
 bool MoveFactory::is_move_safe(const Move& move) const {
     Board tmp_board = _board;
-    Status tmp_status = _status;
+    GameStatus tmp_status = _status;
 
     move.execute(tmp_board, tmp_status);
 
@@ -75,7 +75,7 @@ bool MoveFactory::is_in_check(ChessColour colour) const {
 
 bool MoveFactory::will_move_result_check(const Move& move) const {
     Board tmp_board = _board;
-    Status tmp_status = _status;
+    GameStatus tmp_status = _status;
 
     move.execute(tmp_board, tmp_status);
 
@@ -92,7 +92,7 @@ bool MoveFactory::is_checkmated() const {
 
     for (auto& move : all_moves->moves) {
         Board tmp_board = _board;
-        Status tmp_status = _status;
+        GameStatus tmp_status = _status;
 
         move->execute(tmp_board, tmp_status);
 
@@ -114,7 +114,7 @@ bool MoveFactory::is_stalemated() const {
 
     for (auto& move : all_moves->moves) {
         Board tmp_board = _board;
-        Status tmp_status = _status;
+        GameStatus tmp_status = _status;
 
         move->execute(tmp_board, tmp_status);
 
