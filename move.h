@@ -93,8 +93,8 @@ class MoveHistory {
 public:
     void push_move(std::unique_ptr<Move> move);
     void reset();
-    void undo_last_move(Board& board, GameStatus& status);
-
+    bool undo_last_move(Board& board, GameStatus& status);
+    Move* last_move() const;
 private:
     std::stack<std::unique_ptr<Move>> moves;
 };

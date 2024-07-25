@@ -1,5 +1,3 @@
-#include "board.h"
-#include "observer.h"
 #include "chessgame.h"
 #include "player.h"
 #include <string>
