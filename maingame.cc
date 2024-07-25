@@ -4,9 +4,9 @@
 #include <iostream>
 
 
-MainGame::run() {
+void MainGame::run() {
     std::string command;
-    while(getline(std::cin, command);) {
+    while(getline(std::cin, command)) {
         if (command.rfind("game", 0) == 0) {
             hand_player_signup(command);
         }
