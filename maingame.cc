@@ -3,7 +3,20 @@
 #include <sstream>
 #include <iostream>
 
+// problem1: how to deal with promotion (determine if the promotion move is valid first?)
+// problem2: redisplay of the board after each set_up command
+// problem3: consider determine win or lose by checking if the curr status == BlackWin/WhiteWin/Draw
 
+
+// ---------------------------------- helper func start --------------------------------------------
+
+bool is_computer_player(std::string player_type) {
+    if ((player_type == "computer1") || (player_type == "computer2") || (player_type == "computer3") ||
+        (player_type == "computer4") ) {
+            return true;
+        }
+    return false;
+}
 
 const BoardPosn& posn_composed(std::string posn) { // convert a string (e.g. "E6") to BoardPosn
     char col;
@@ -14,32 +27,10 @@ const BoardPosn& posn_composed(std::string posn) { // convert a string (e.g. "E6
 
 
     int col_adj;
-    col_adj = col - 97;
+    col_adj = col - 'a';
 
-    BoardPosn p{col_adj, row};
-    return p;
+    return BoardPosn{col_adj, row - 1};
 }
-
-
-void MainGame::run() {
-    std::string command;
-    while(getline(std::cin, command)) {
-        if (command.rfind("game", 0) == 0) {
-            handle_player_sign_up(command);
-        }
-        if (command == "resign") {
-                handle_resign();
-        }
-        if (command.rfind("move", 0) == 0) {
-            handle_move(command);
-        } 
-        if (command == "setup") {
-            handle_set_up();
-        }
-    }
-}
-
-
 
 // Function to create a player based on the input string
 std::unique_ptr<BasePlayer> create_player(const std::string& playerType, ChessGame& game) {
@@ -58,6 +49,38 @@ std::unique_ptr<BasePlayer> create_player(const std::string& playerType, ChessGa
     }
 }
 
+
+//----------------------------------helper func end----------------------------------
+
+void MainGame::run() {
+
+    std::string command;
+    std::vector<BoardObserver *> observers;
+    while(getline(std::cin, command)) {
+       /* if (_game._status.result == Result::WhiteWin) {
+
+        }*/
+
+        if (command.rfind("game", 0) == 0) {
+            handle_player_sign_up(command);
+        } 
+        if (command == "resign") {
+                handle_resign();
+        } 
+        if (command.rfind("move", 0) == 0) {
+            handle_move(command);
+            //BoardObserver *t = new TextDisplay();
+            //observers.emplace_back(t);
+        }
+        if (command == "setup") {
+            handle_set_up();
+        } 
+
+    }
+}
+
+
+
 void MainGame::handle_player_sign_up(std::string command){
     std::string cmd;
     std::istringstream iss{command};
@@ -65,24 +88,24 @@ void MainGame::handle_player_sign_up(std::string command){
             try{
                 _p1 = create_player(white_player_type, _game);
                 _p2 = create_player(black_player_type, _game);
-
+                gameRunning = true;
+                currentTurn = "White";
             } catch (const std::invalid_argument& e) {
                 std::cout << e.what() << std::endl;
             }
-
 }
 
 void MainGame::handle_resign() {
     if(!gameRunning) {
-                std::cout << "No game is currently running." << std::endl;
-                return;
-            }
-            if(currentTurn == "White") {
-                _game.set_status(Result::BlackWin);
-            } else {
-                _game.set_status(Result::WhiteWin);
-            }
-            gameRunning = false;
+        std::cout << "No game is currently running." << std::endl;
+            return;
+    }
+    if(currentTurn == "White") {
+        _game.set_status(Result::BlackWin);
+    } else {
+        _game.set_status(Result::WhiteWin);
+    }
+    gameRunning = false;
 }
 
 void MainGame::handle_set_up() {
@@ -143,7 +166,6 @@ void MainGame::handle_set_up() {
                     if (piece_type = 'p') {
                         _game.set_piece(p, Piece::BlackPawn);
                     }
-
                 }
                 if (setup_command == "-") {
                     iss2 >> board_pos;
@@ -171,42 +193,32 @@ void MainGame::handle_set_up() {
 
 
 void MainGame::handle_move(std::string command) {
-     if(!gameRunning) {
-                std::cout << "No game is currently running." << std::endl;
-                return;
-            }
+    if(!gameRunning) {
+        std::cout << "No game is currently running." << std::endl;
+            return;
+    }
             
+    if ( (currentTurn == "white" && white_player_type == "human")  || (currentTurn == "black" && black_player_type == "human")){
+        std::string cmd;
+        std::string start_pos;
+        std::string final_pos;
+        std::istringstream iss(command);
+        iss >> cmd >> start_pos >> final_pos;
+        const BoardPosn& from = posn_composed(start_pos);
+        const BoardPosn& to = posn_composed(final_pos);
+            _game.execute_move(from, to);
+    } 
 
-            if (currentTurn == "White") {
-                if (white_player_type == "human") {
-                    std::string cmd;
-                    std::string start_pos;
-                    std::string final_pos;
-                    std::istringstream iss(command);
-                    iss >> cmd >> start_pos >> final_pos;
-                    const BoardPosn& from = posn_composed(start_pos);
-                    const BoardPosn& to = posn_composed(final_pos);
-                    _game.execute_move(from, to);
-                } else {
-                     _p1->get_move();
-                }
-            }
-            if (currentTurn == "Black") {
-                if (white_player_type == "human") {
-                    std::string cmd;
-                    std::string start_pos;
-                    std::string final_pos;
-                    std::istringstream iss(command);
-                    iss >> cmd >> start_pos >> final_pos;
-                    const BoardPosn& from = posn_composed(start_pos);
-                    const BoardPosn& to = posn_composed(final_pos);
-                    _game.execute_move(from, to);
-                } else {
-                     _p2->get_move();
-                }
-            }
-            currentTurn = (currentTurn == "white") ? "black" : "white"; // switch turn 
+    if (currentTurn == "white" && is_computer_player(white_player_type) || currentTurn == "black" && is_computer_player(black_player_type)) 
+
+     {
+            RawMove white_move = _p1->get_move();
+            _game.execute_move(white_move.from, white_move.to);
+    }
+        currentTurn = (currentTurn == "white") ? "black" : "white"; // switch turn 
 }
+
+
 
 void MainGame::handle_undo() {
     _game.undo_move();
