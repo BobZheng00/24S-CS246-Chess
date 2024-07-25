@@ -149,7 +149,7 @@ void MainGame::handle_set_up() {
                     iss2 >> board_pos;
                     const BoardPosn& p = posn_composed(board_pos);
         
-                    _game.reset_piece(p, row);
+                    _game.reset_piece(p);
 
                 }
                 
