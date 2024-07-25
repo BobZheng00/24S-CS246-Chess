@@ -197,13 +197,14 @@ void MainGame::handle_move(std::string command) {
         std::cout << "No game is currently running." << std::endl;
             return;
     }
+    std::istringstream iss(command);
+    std::string cmd;
+    iss >> cmd;
             
     if ( (currentTurn == "white" && white_player_type == "human")  || (currentTurn == "black" && black_player_type == "human")){
-        std::string cmd;
         std::string start_pos;
         std::string final_pos;
-        std::istringstream iss(command);
-        iss >> cmd >> start_pos >> final_pos;
+        iss >> start_pos >> final_pos;
         const BoardPosn& from = posn_composed(start_pos);
         const BoardPosn& to = posn_composed(final_pos);
             _game.execute_move(from, to);
