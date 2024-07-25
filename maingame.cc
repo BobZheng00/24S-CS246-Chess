@@ -4,8 +4,8 @@
 #include <iostream>
 
 // problem1: how to deal with promotion (determine if the promotion move is valid first?)
-// problem2: redisplay of the board after each set_up command
-// problem3: consider determine win or lose by checking if the curr status == BlackWin/WhiteWin/Draw
+// problem2: how to redisplay of the board after each set_up command (which place to place observers)
+// problem3: try to determine win or lose by checking if the curr status == BlackWin/WhiteWin/Draw (but it says expression has a int type?? same thing happen in status class)
 
 
 // ---------------------------------- helper func start --------------------------------------------
@@ -55,7 +55,7 @@ std::unique_ptr<BasePlayer> create_player(const std::string& playerType, ChessGa
 void MainGame::run() {
 
     std::string command;
-    std::vector<BoardObserver *> observers;
+   // std::vector<BoardObserver *> observers;
     while(getline(std::cin, command)) {
        /* if (_game._status.result == Result::WhiteWin) {
 
@@ -100,7 +100,7 @@ void MainGame::handle_resign() {
         std::cout << "No game is currently running." << std::endl;
             return;
     }
-    if(currentTurn == "White") {
+    if  (currentTurn == "White") {
         _game.set_status(Result::BlackWin);
     } else {
         _game.set_status(Result::WhiteWin);
@@ -197,13 +197,14 @@ void MainGame::handle_move(std::string command) {
         std::cout << "No game is currently running." << std::endl;
             return;
     }
+    std::istringstream iss(command);
+    std::string cmd;
+    iss >> cmd;
             
     if ( (currentTurn == "white" && white_player_type == "human")  || (currentTurn == "black" && black_player_type == "human")){
-        std::string cmd;
         std::string start_pos;
         std::string final_pos;
-        std::istringstream iss(command);
-        iss >> cmd >> start_pos >> final_pos;
+        iss >> start_pos >> final_pos;
         const BoardPosn& from = posn_composed(start_pos);
         const BoardPosn& to = posn_composed(final_pos);
             _game.execute_move(from, to);
@@ -212,8 +213,8 @@ void MainGame::handle_move(std::string command) {
     if (currentTurn == "white" && is_computer_player(white_player_type) || currentTurn == "black" && is_computer_player(black_player_type)) 
 
      {
-            RawMove white_move = _p1->get_move();
-            _game.execute_move(white_move.from, white_move.to);
+            RawMove move = _p1->get_move();
+            _game.execute_move(move.from, move.to);
     }
         currentTurn = (currentTurn == "white") ? "black" : "white"; // switch turn 
 }
