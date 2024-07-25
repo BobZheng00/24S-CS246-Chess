@@ -31,13 +31,8 @@ public:
     // move execution and undoing must be called by chessgame
     bool execute_move(const BoardPosn& from, const BoardPosn& to, std::optional<PieceType> opt_promotion = std::nullopt); // for computer and player to call
     void undo_move(); // call move_history.undo_last_move
-<<<<<<< HEAD
-// private:
-    GameStatus _status; // consider initialize to Unstarted status
-=======
 private:
     GameStatus _status;
->>>>>>> refs/remotes/origin/main
     Board _board;
     MoveFactory _move_factory;
     friend class ComputerLv1;
