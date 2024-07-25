@@ -5,6 +5,7 @@
 #include "movefactory.h"
 #include "chessgame.h"
 #include "observer.h"
+#include "maingame.h"
 #include <iostream>
 #include <memory>
 #include <optional>
@@ -218,4 +219,7 @@ int main() {
     // // cg._board.print_board();
     // // cg._status.print_status();
     // cg._status.move_history->undo_last_move(cg._board, cg._status);
+
+    MainGame mg;
+    mg.run();
 }

@@ -5,7 +5,7 @@
 class MainGame {
 public:
     MainGame();
-    ~MainGame();
+    ~MainGame() = default;
 
     void run();
 
@@ -27,5 +27,5 @@ private:
     std::string currentTurn;
     std::string white_player_type;
     std::string black_player_type;
-
+    
 };

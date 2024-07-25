@@ -50,19 +50,19 @@ std::unique_ptr<BasePlayer> create_player(const std::string &playerType, ChessGa
     }
     else if (playerType == "computer1")
     {
-        return std::make_unique<ComputerLv1>(game);
+        return std::make_unique<ComputerLv1>(&game);
     }
     else if (playerType == "computer2")
     {
-        return std::make_unique<ComputerLv2>(game);
+        return std::make_unique<ComputerLv2>(&game);
     }
     else if (playerType == "computer3")
     {
-        return std::make_unique<ComputerLv3>(game);
+        return std::make_unique<ComputerLv3>(&game);
     }
     else if (playerType == "computer4")
     {
-        return std::make_unique<ComputerLv4>(game);
+        return std::make_unique<ComputerLv4>(&game);
     }
     else
     {
@@ -72,15 +72,14 @@ std::unique_ptr<BasePlayer> create_player(const std::string &playerType, ChessGa
 
 //----------------------------------helper func end----------------------------------
 
-MainGame::MainGame(): _p1{nullptr}, _p2{nullptr}, _game{}, _text_observer{nullptr}, _graphics_observer{nullptr}, white_score{0}, black_score{0}, currentTurn{"White"}, white_player_type{}, black_player_type{}{
+MainGame::MainGame(): _p1{nullptr}, _p2{nullptr}, _game{}, _text_observer{nullptr}, _graphics_observer{nullptr}, white_score{0}, black_score{0}, currentTurn{"white"}, white_player_type{}, black_player_type{}{
     _text_observer = std::make_unique<TextDisplay>(_game.get_board_for_observers());
-    _graphics_observer = std::make_unique<GraphicDisplay>(_game.get_board_for_observers());
+    // _graphics_observer = std::make_unique<GraphicDisplay>(_game.get_board_for_observers());
 }
 
 void MainGame::run() {
 
     std::string command;
-    // std::vector<BoardObserver *> observers;
     while (getline(std::cin, command))
     {
         if (_game.get_status() == Result::WhiteWin)
@@ -127,6 +126,10 @@ void MainGame::run() {
         {
             handle_set_up();
         }
+        if (command == "undo")
+        {
+            handle_undo();  
+        }
     }
 
     print_score();
@@ -143,7 +146,6 @@ void MainGame::handle_player_sign_up(std::string command)
         _p2 = create_player(black_player_type, _game);
 
         _game.set_status(Result::Unstarted);
-        currentTurn = "White";
     }
     catch (const std::invalid_argument &e)
     {
@@ -158,7 +160,7 @@ void MainGame::handle_resign()
         std::cout << "No game is currently running." << std::endl;
         return;
     }
-    if (currentTurn == "White")
+    if (_game.get_turn() == ChessColour::White)
     {
         _game.set_status(Result::BlackWin);
     }
@@ -223,7 +225,7 @@ void MainGame::handle_set_up()
             {
                 _game.set_piece(p, Piece::WhiteKnight);
             }
-            if (piece_type = 'P')
+            if (piece_type == 'P')
             {
                 _game.set_piece(p, Piece::WhitePawn);
             }
@@ -247,7 +249,7 @@ void MainGame::handle_set_up()
             {
                 _game.set_piece(p, Piece::BlackKnight);
             }
-            if (piece_type = 'p')
+            if (piece_type == 'p')
             {
                 _game.set_piece(p, Piece::BlackPawn);
             }
@@ -278,17 +280,31 @@ void MainGame::handle_set_up()
 
 void MainGame::handle_move(std::string command)
 {
-    if ((_game.get_status() == Result::Unstarted) || (_game.get_status() == Result::Setup))
+    if (_game.get_status() == Result::Setup)
     {
-        std::cout << "No game is currently running." << std::endl;
+        std::cout << "Cannot make a move while in setup mode." << std::endl;
         return;
     }
+
+    if ((_game.get_status() == Result::Unstarted) && ((!_p1.get()) || (!_p2.get())))
+    {
+        std::cout << "No players have signed up." << std::endl;
+        return;
+    }
+    else if (_game.get_status() == Result::Unstarted)
+    {
+        _game.regular_init();
+        _game.set_status(Result::Unfinished);
+    }
+
+    std::cout << command << std::endl;
     std::istringstream iss(command);
     std::string cmd;
     iss >> cmd;
 
-    if ((currentTurn == "white" && white_player_type == "human") || (currentTurn == "black" && black_player_type == "human"))
-    {
+    if ((_game.get_turn() == ChessColour::White && white_player_type == "human") || (_game.get_turn() == ChessColour::Black && black_player_type == "human"))
+    {   
+        std::cout << command << std::endl;
         std::string start_pos;
         std::string final_pos;
         iss >> start_pos >> final_pos;
@@ -319,13 +335,11 @@ void MainGame::handle_move(std::string command)
         }
     }
 
-    if (currentTurn == "white" && is_computer_player(white_player_type) || currentTurn == "black" && is_computer_player(black_player_type))
-
+    if (_game.get_turn() == ChessColour::White && is_computer_player(white_player_type) || _game.get_turn() == ChessColour::Black && is_computer_player(black_player_type))
     {
         RawMove move = _p1->get_move();
         _game.execute_move(move.from, move.to);
     }
-    currentTurn = (currentTurn == "white") ? "black" : "white"; // switch turn
 }
 
 void MainGame::handle_undo()

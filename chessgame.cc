@@ -74,6 +74,10 @@ void ChessGame::set_turn(ChessColour colour) {
     _status.cur_turn = colour;
 }
 
+ChessColour ChessGame::get_turn() const {
+    return _status.cur_turn;
+}
+
 void ChessGame::set_piece(const BoardPosn& posn, const Piece& piece) {
     _board.set_piece(posn, piece);
 }

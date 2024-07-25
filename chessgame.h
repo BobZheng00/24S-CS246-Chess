@@ -17,6 +17,7 @@ public:
 
     // for setup stage
     void set_turn(ChessColour colour);
+    ChessColour get_turn() const;
     void set_piece(const BoardPosn& posn, const Piece& piece);
     void reset_piece(const BoardPosn& posn);
     bool is_valid_setup() const;
