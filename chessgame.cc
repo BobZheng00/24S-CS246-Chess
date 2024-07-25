@@ -29,6 +29,10 @@ void ChessGame::set_piece(const BoardPosn& posn, const Piece& piece) {
     _board.set_piece(posn, piece);
 }
 
+void ChessGame::reset_piece(const BoardPosn& posn) {
+    _board.reset_piece(posn);
+}
+
 bool ChessGame::is_valid_setup() const {
     int white_king_count = 0;
     int black_king_count = 0;
@@ -62,7 +66,14 @@ void ChessGame::set_status(Result result) {
     _status.result = result;
 }
 
+Result ChessGame::get_status() const {
+    return _status.result;
+}
+
 bool ChessGame::execute_move(const BoardPosn& from, const BoardPosn& to, std::optional<PieceType> opt_promotion) {
+    if (_status.result != Result::Unfinished && _status.result != Result::WhiteInCheck && _status.result != Result::BlackInCheck) {
+        return false;
+    }
     if (!_board.get_piece(from) || _board.get_piece(from).value().colour != _status.cur_turn) {
         return false;
     }
@@ -81,11 +92,55 @@ bool ChessGame::execute_move(const BoardPosn& from, const BoardPosn& to, std::op
                 }
             }
             if (_move_factory.will_move_result_check(*move)) return false;
-            move->execute(_board, _status);
+            move->execute(_board, _status); // player turn has changed
+
+            // check for checkmate, stalemate, and check
+            if (_move_factory.is_in_check(_status.cur_turn)) {
+                if (_move_factory.is_checkmated()) {
+                    if (_status.cur_turn == ChessColour::White) {
+                        _status.result = Result::BlackWin;
+                    } else {
+                        _status.result = Result::WhiteWin;
+                    }
+                } else if (_status.cur_turn == ChessColour::White) {
+                    _status.result = Result::WhiteInCheck;
+                } else {
+                    _status.result = Result::BlackInCheck;
+                }
+            }
+            else if (_move_factory.is_stalemated()) {
+                _status.result = Result::Draw;
+            }
+            else {
+                _status.result = Result::Unfinished;
+            }
             _status.move_history->push_move(std::move(move));
             return true;
         }
     }
 
     return false;
+}
+
+void ChessGame::undo_move() {
+    _status.move_history->undo_last_move(_board, _status);
+    if (_move_factory.is_in_check(_status.cur_turn)) {
+        if (_move_factory.is_checkmated()) {
+            if (_status.cur_turn == ChessColour::White) {
+                _status.result = Result::BlackWin;
+            } else {
+                _status.result = Result::WhiteWin;
+            }
+        } else if (_status.cur_turn == ChessColour::White) {
+            _status.result = Result::WhiteInCheck;
+        } else {
+            _status.result = Result::BlackInCheck;
+        }
+    }
+    else if (_move_factory.is_stalemated()) {
+        _status.result = Result::Draw;
+    }
+    else {
+        _status.result = Result::Unfinished;
+    }
 }

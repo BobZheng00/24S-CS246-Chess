@@ -18,9 +18,11 @@ public:
     // for setup stage
     void set_turn(ChessColour colour);
     void set_piece(const BoardPosn& posn, const Piece& piece);
+    void reset_piece(const BoardPosn& posn);
     bool is_valid_setup() const;
 
     void set_status(Result result);
+    Result get_status() const;
 
     // ADD MORE ACCESSOR FUNCTIONS AS NEEDED
     
