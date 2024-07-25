@@ -213,8 +213,8 @@ void MainGame::handle_move(std::string command) {
     if (currentTurn == "white" && is_computer_player(white_player_type) || currentTurn == "black" && is_computer_player(black_player_type)) 
 
      {
-            RawMove white_move = _p1->get_move();
-            _game.execute_move(white_move.from, white_move.to);
+            RawMove move = _p1->get_move();
+            _game.execute_move(move.from, move.to);
     }
         currentTurn = (currentTurn == "white") ? "black" : "white"; // switch turn 
 }
