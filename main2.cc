@@ -3,41 +3,18 @@
 #include "move.h"
 #include "chessgame.h"
 #include <string>
-#include <sstream>;
+#include <sstream>
 #include <iostream>
 #include <memory>
 #include <optional>
 
 
-// Function to create a player based on the input string
-std::unique_ptr<BasePlayer> create_player(const std::string& playerType, ChessGame& game) {
-    if (playerType == "human") {
-        return std::make_unique<HumanPlayer>();
-    } else if (playerType == "computer1") {
-        return std::make_unique<ComputerLv1>(game);
-    } else if (playerType == "computer2") {
-        return std::make_unique<ComputerLv2>(game);
-    } else if (playerType == "computer3") {
-        return std::make_unique<ComputerLv3>(game);
-    } else if (playerType == "computer4") {
-        return std::make_unique<ComputerLv4>(game);
-    } else {
-        throw std::invalid_argument("Invalid player type");
-    }
-}
 
 
 
 int main(){
     std::string s1;
     std::string command;
-    std::string current_turn;
-
-    std::string currentTurn;
-
-    bool gameRunning;
-    bool inSetupMode;
-
     ChessGame g;
     std::unique_ptr<BasePlayer> whitePlayer, blackPlayer;
    // std::vector<Observer *> observers;
@@ -46,17 +23,7 @@ int main(){
 
 
         if(command.rfind("game", 0) == 0) { // see if string command contain substring game or not
-            std::string white_player_type, black_player_type;
-            std::istringstream iss1{s1};
-            std::string cmd;
-            iss1 >> cmd >> white_player_type >> black_player_type;
-            try{
-                auto whitePlayer = create_player(white_player_type, g);
-                auto blackPlayer = create_player(black_player_type, g);
-
-            } catch (const std::invalid_argument& e) {
-                std::cout << e.what() << std::endl;
-            }
+           
         }
 
 

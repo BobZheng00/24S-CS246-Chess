@@ -28,6 +28,4 @@ private:
     std::string white_player_type;
     std::string black_player_type;
 
-    bool gameRunning;
-    bool inSetupMode;
 };

@@ -32,7 +32,7 @@ public:
     bool execute_move(const BoardPosn& from, const BoardPosn& to, std::optional<PieceType> opt_promotion = std::nullopt); // for computer and player to call
     void undo_move(); // call move_history.undo_last_move
 // private:
-    GameStatus _status;
+    GameStatus _status; // consider initialize to Unstarted status
     Board _board;
     MoveFactory _move_factory;
     friend class ComputerLv1;
