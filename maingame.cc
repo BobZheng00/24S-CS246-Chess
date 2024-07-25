@@ -335,9 +335,11 @@ void MainGame::handle_move(std::string command)
         }
     }
 
-    if (_game.get_turn() == ChessColour::White && is_computer_player(white_player_type) || _game.get_turn() == ChessColour::Black && is_computer_player(black_player_type))
+    else if ((_game.get_turn() == ChessColour::White && is_computer_player(white_player_type)) || (_game.get_turn() == ChessColour::Black && is_computer_player(black_player_type)))
     {
-        RawMove move = _p1->get_move();
+        std::cout << "computer is supposed to move now" << std::endl;
+        RawMove move = _p2->get_move();
+        std::cout << move.from.file << " " << move.from.rank << " " << move.to.file << " " << move.to.rank << std::endl;
         _game.execute_move(move.from, move.to);
     }
 }
