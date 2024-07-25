@@ -2,6 +2,8 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <memory>
+#include "observer.h"
 
 // problem1: how to deal with promotion (determine if the promotion move is valid first?)
 // problem2: how to redisplay of the board after each set_up command (which place to place observers)
@@ -18,7 +20,7 @@ bool is_computer_player(std::string player_type) {
     return false;
 }
 
-const BoardPosn& posn_composed(std::string posn) { // convert a string (e.g. "E6") to BoardPosn
+BoardPosn posn_composed(std::string posn) { // convert a string (e.g. "E6") to BoardPosn
     char col;
     int row;
                
@@ -37,13 +39,13 @@ std::unique_ptr<BasePlayer> create_player(const std::string& playerType, ChessGa
     if (playerType == "human") {
         return std::make_unique<HumanPlayer>();
     } else if (playerType == "computer1") {
-        return std::make_unique<ComputerLv1>(game);
+        return std::make_unique<ComputerLv1>(&game);
     } else if (playerType == "computer2") {
-        return std::make_unique<ComputerLv2>(game);
+        return std::make_unique<ComputerLv2>(&game);
     } else if (playerType == "computer3") {
-        return std::make_unique<ComputerLv3>(game);
+        return std::make_unique<ComputerLv3>(&game);
     } else if (playerType == "computer4") {
-        return std::make_unique<ComputerLv4>(game);
+        return std::make_unique<ComputerLv4>(&game);
     } else {
         throw std::invalid_argument("Invalid player type");
     }
@@ -51,6 +53,11 @@ std::unique_ptr<BasePlayer> create_player(const std::string& playerType, ChessGa
 
 
 //----------------------------------helper func end----------------------------------
+
+MainGame::MainGame(): _p1{nullptr}, _p2{nullptr}, _game{}, _text_observer{nullptr}, _graphics_observer{nullptr}, white_score{0}, black_score{0}, currentTurn{"White"}, white_player_type{}, black_player_type{}, gameRunning{false}, inSetupMode{false} {
+    _text_observer = std::make_unique<TextDisplay>(_game.get_board_for_observers());
+    _graphics_observer = std::make_unique<GraphicDisplay>(_game.get_board_for_observers());
+}
 
 void MainGame::run() {
 
@@ -148,7 +155,7 @@ void MainGame::handle_set_up() {
                     if (piece_type == 'B') {
                         _game.set_piece(p, Piece::WhiteKnight);
                     }
-                    if (piece_type = 'P') {
+                    if (piece_type == 'P') {
                         _game.set_piece(p, Piece::WhitePawn);
                     }
                     if (piece_type == 'k') {
@@ -163,7 +170,7 @@ void MainGame::handle_set_up() {
                     if (piece_type == 'b') {
                         _game.set_piece(p, Piece::BlackBishop);
                     }
-                    if (piece_type = 'p') {
+                    if (piece_type == 'p') {
                         _game.set_piece(p, Piece::BlackPawn);
                     }
                 }
@@ -210,7 +217,7 @@ void MainGame::handle_move(std::string command) {
             _game.execute_move(from, to);
     } 
 
-    if (currentTurn == "white" && is_computer_player(white_player_type) || currentTurn == "black" && is_computer_player(black_player_type)) 
+    if ((currentTurn == "white" && is_computer_player(white_player_type)) || (currentTurn == "black" && is_computer_player(black_player_type))) 
 
      {
             RawMove move = _p1->get_move();

@@ -31,7 +31,7 @@ public:
     // move execution and undoing must be called by chessgame
     bool execute_move(const BoardPosn& from, const BoardPosn& to, std::optional<PieceType> opt_promotion = std::nullopt); // for computer and player to call
     void undo_move(); // call move_history.undo_last_move
-// private:
+private:
     GameStatus _status;
     Board _board;
     MoveFactory _move_factory;

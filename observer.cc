@@ -9,6 +9,10 @@ TextDisplay::TextDisplay(BoardSubject* p_board_subj): _p_board_subj{p_board_subj
     _p_board_subj->attach(this);
 }
 
+TextDisplay::~TextDisplay() {
+    _p_board_subj->detach(this);
+}
+
 void TextDisplay::update_board(std::unique_ptr<std::vector<BoardPosn>> b, Result r) const {
     for (int rank = 7; rank >= 0; --rank) {
         std::cout << rank + 1 << ' ';
@@ -24,6 +28,7 @@ void TextDisplay::update_board(std::unique_ptr<std::vector<BoardPosn>> b, Result
     }
     std::cout << "  a b c d e f g h" << std::endl << std::endl;
 }
+
 
 GraphicDisplay::GraphicDisplay(BoardSubject* p_board_subj): _window{Xwindow(4000, 4000)}, _p_board_subj{p_board_subj} {
     _p_board_subj->attach(this);
@@ -44,9 +49,13 @@ GraphicDisplay::GraphicDisplay(BoardSubject* p_board_subj): _window{Xwindow(4000
             int textX = x + squareSize / 2 - fontSize / 2;
             int textY = y + squareSize / 2 + fontSize / 2;
             std::string pieceChar = std::string(1, _p_board_subj->get_piece(file, rank).value().to_char());
-            _window.drawString(textX, textY, pieceChar, Xwindow::Blue);
+            _window.drawString(textX, textY, pieceChar);
         }
     }
+}
+
+GraphicDisplay::~GraphicDisplay() {
+    _p_board_subj->detach(this);
 }
 
 void GraphicDisplay::update_board(std::unique_ptr<std::vector<BoardPosn>> b, Result r) const {
@@ -68,7 +77,7 @@ void GraphicDisplay::update_board(std::unique_ptr<std::vector<BoardPosn>> b, Res
             int fontSize = 24;
             int textX = x + squareSize / 2 - fontSize / 2;
             int textY = y + squareSize / 2 + fontSize / 2;
-            _window.drawString(textX, textY, pieceChar, Xwindow::Blue);
+            _window.drawString(textX, textY, pieceChar);
         }
     }
 }

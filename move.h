@@ -51,6 +51,7 @@ struct Move: public RawMove {
     UniqueMove move_type;
     Move(const BoardPosn& from, const BoardPosn& to, const Piece& p, UniqueMove move_type = UniqueMove::Normal): RawMove{from, to}, moved_piece{p}, move_type{move_type} {}
     virtual ~Move() = default;
+    RawMove get_raw_move() const { return {from, to}; }
     virtual std::unique_ptr<std::vector<BoardPosn>> execute(Board& board, GameStatus& status) const = 0;
     virtual std::unique_ptr<std::vector<BoardPosn>> undo(Board& board, GameStatus& status) const = 0;
 };

@@ -19,6 +19,8 @@ private:
 
     std::unique_ptr<BasePlayer> _p1, _p2;
     ChessGame _game;
+    std::unique_ptr<BoardObserver> _text_observer;
+    std::unique_ptr<BoardObserver> _graphics_observer;
     double white_score;
     double black_score;
 
