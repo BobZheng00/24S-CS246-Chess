@@ -27,7 +27,8 @@ bool is_computer_player(std::string player_type)
     return false;
 }
 
-BoardPosn posn_composed(std::string posn) { // convert a string (e.g. "E6") to BoardPosn
+BoardPosn posn_composed(std::string posn)
+{ // convert a string (e.g. "E6") to BoardPosn
     char col;
     int row;
 
@@ -36,7 +37,6 @@ BoardPosn posn_composed(std::string posn) { // convert a string (e.g. "E6") to B
 
     int col_adj;
     col_adj = col - 'a';
-    
 
     return BoardPosn{col_adj, row - 1};
 }
@@ -72,12 +72,14 @@ std::unique_ptr<BasePlayer> create_player(const std::string &playerType, ChessGa
 
 //----------------------------------helper func end----------------------------------
 
-MainGame::MainGame(): _p1{nullptr}, _p2{nullptr}, _game{}, _text_observer{nullptr}, _graphics_observer{nullptr}, white_score{0}, black_score{0}, currentTurn{"white"}, white_player_type{}, black_player_type{}{
+MainGame::MainGame() : _p1{nullptr}, _p2{nullptr}, _game{}, _text_observer{nullptr}, _graphics_observer{nullptr}, white_score{0}, black_score{0}, currentTurn{"white"}, white_player_type{}, black_player_type{}
+{
     _text_observer = std::make_unique<TextDisplay>(_game.get_board_for_observers());
     // _graphics_observer = std::make_unique<GraphicDisplay>(_game.get_board_for_observers());
 }
 
-void MainGame::run() {
+void MainGame::run()
+{
 
     std::string command;
     while (getline(std::cin, command))
@@ -97,7 +99,7 @@ void MainGame::run() {
             std::cout << "Game is a draw." << std::endl;
             break;
         }
-        
+
         if (_game.get_status() == Result::WhiteInCheck)
         {
             std::cout << "White is in check." << std::endl;
@@ -106,7 +108,6 @@ void MainGame::run() {
         {
             std::cout << "Black is in check." << std::endl;
         }
-        
 
         if (command.rfind("game", 0) == 0)
         {
@@ -128,7 +129,7 @@ void MainGame::run() {
         }
         if (command == "undo")
         {
-            handle_undo();  
+            handle_undo();
         }
     }
 
@@ -245,7 +246,7 @@ void MainGame::handle_set_up()
             {
                 _game.set_piece(p, Piece::BlackBishop);
             }
-             if (piece_type == 'n')
+            if (piece_type == 'n')
             {
                 _game.set_piece(p, Piece::BlackKnight);
             }
@@ -303,7 +304,7 @@ void MainGame::handle_move(std::string command)
     iss >> cmd;
 
     if ((_game.get_turn() == ChessColour::White && white_player_type == "human") || (_game.get_turn() == ChessColour::Black && black_player_type == "human"))
-    {   
+    {
         std::cout << command << std::endl;
         std::string start_pos;
         std::string final_pos;
@@ -312,15 +313,16 @@ void MainGame::handle_move(std::string command)
         const BoardPosn &to = posn_composed(final_pos);
 
         char piece_type;
-        if (!iss.eof()) {
+        if (!iss.eof())
+        {
             iss >> piece_type;
             if ((piece_type == 'Q') || (piece_type == 'q'))
             {
-                 _game.execute_move(from, to, std::make_optional<PieceType>(PieceType::Queen));
+                _game.execute_move(from, to, std::make_optional<PieceType>(PieceType::Queen));
             }
             if ((piece_type == 'R') || (piece_type == 'r'))
             {
-               _game.execute_move(from, to, std::make_optional<PieceType>(PieceType::Rook));
+                _game.execute_move(from, to, std::make_optional<PieceType>(PieceType::Rook));
             }
             if ((piece_type == 'B') || (piece_type == 'b'))
             {
@@ -330,17 +332,25 @@ void MainGame::handle_move(std::string command)
             {
                 _game.execute_move(from, to, std::make_optional<PieceType>(PieceType::Knight));
             }
-        } else {
-             _game.execute_move(from, to);
+        }
+        else
+        {
+            _game.execute_move(from, to);
         }
     }
 
-    else if ((_game.get_turn() == ChessColour::White && is_computer_player(white_player_type)) || (_game.get_turn() == ChessColour::Black && is_computer_player(black_player_type)))
-    {
-        std::cout << "computer is supposed to move now" << std::endl;
-        RawMove move = _p2->get_move();
-        std::cout << move.from.file << " " << move.from.rank << " " << move.to.file << " " << move.to.rank << std::endl;
-        _game.execute_move(move.from, move.to);
+    else if ((_game.get_turn() == ChessColour::White && is_computer_player(white_player_type)) || (_game.get_turn() == ChessColour::Black && is_computer_player(black_player_type))) {
+        if (_game.get_turn() == ChessColour::White && is_computer_player(white_player_type)) {
+            std::cout << "computer is supposed to move now" << std::endl;
+            RawMove move = _p1->get_move();
+            std::cout << move.from.file << " " << move.from.rank << " " << move.to.file << " " << move.to.rank << std::endl;
+            _game.execute_move(move.from, move.to);
+        } else {
+            std::cout << "computer is supposed to move now" << std::endl;
+            RawMove move = _p2->get_move();
+            std::cout << move.from.file << " " << move.from.rank << " " << move.to.file << " " << move.to.rank << std::endl;
+            _game.execute_move(move.from, move.to);
+        }
     }
 }
 
