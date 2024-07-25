@@ -4,13 +4,14 @@
 #include "status.h"
 #include "movefactory.h"
 #include "chessgame.h"
+#include "observer.h"
 #include <iostream>
 #include <memory>
 #include <optional>
 
 int main() {
     Board b;
-    Status s;
+    GameStatus s;
     MoveFactory mf{b, s};
     // b.standard_init();
     b.print_board();
@@ -183,30 +184,44 @@ int main() {
     // std::cout << mf.is_stalemated() << std::endl;
 
     ChessGame cg;
-    cg.regular_init();
+    std::unique_ptr<TextDisplay> td = std::make_unique<TextDisplay>(cg.get_board_for_observers());
+    
 
-    // cg.set_piece({2, 7}, Piece::BlackKing);
+    cg.setup_init();
+    cg.set_status(Result::Unfinished);
 
-    // cg.set_piece({1, 7}, Piece::BlackRook);
-    // cg.set_piece({3, 7}, Piece::BlackRook);
-    // cg.set_piece({0, 0}, Piece::WhiteQueen);
-    // cg.set_piece({2, 0}, Piece::WhiteKing);
+    cg.set_piece({2, 7}, Piece::BlackKing);
+
+    cg.set_piece({1, 7}, Piece::BlackRook);
+    cg.set_piece({3, 7}, Piece::BlackRook);
+    cg.set_piece({0, 4}, Piece::WhiteQueen);
+    cg.set_piece({2, 0}, Piece::WhiteKing);
 
     cg._board.print_board();
     cg._status.print_status();
-    std::cout << cg.execute_move({0, 1}, {0, 3}) << std::endl;
-    cg._board.print_board();
+    std::cout << cg.execute_move({0, 4}, {2, 6}) << std::endl;
+    // cg._board.print_board();
     cg._status.print_status();
-    std::cout << cg.execute_move({1, 6}, {1, 4}) << std::endl;
-    cg._board.print_board();
+    std::cout << cg.execute_move({2, 7}, {2, 6}) << std::endl;
+    // cg._board.print_board();
     cg._status.print_status();
-    // std::cout << cg.is_valid_setup() << std::endl;
 
-    cg._status.move_history->undo_last_move(cg._board, cg._status);
-    cg._board.print_board();
+    cg.undo_move();
+    // cg._board.print_board();
     cg._status.print_status();
-    cg._status.move_history->undo_last_move(cg._board, cg._status);
-    cg._board.print_board();
+    cg.undo_move();
+    // cg._board.print_board();
     cg._status.print_status();
-    cg._status.move_history->undo_last_move(cg._board, cg._status);
+    // std::cout << cg.execute_move({1, 6}, {1, 4}) << std::endl;
+    // cg._board.print_board();
+    // cg._status.print_status();
+    // // std::cout << cg.is_valid_setup() << std::endl;
+
+    // cg._status.move_history->undo_last_move(cg._board, cg._status);
+    // cg._board.print_board();
+    // cg._status.print_status();
+    // cg._status.move_history->undo_last_move(cg._board, cg._status);
+    // cg._board.print_board();
+    // cg._status.print_status();
+    // cg._status.move_history->undo_last_move(cg._board, cg._status);
 }

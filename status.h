@@ -18,9 +18,9 @@ enum class Result {
     Draw
 };
 
-struct Status {
-    Status();
-    Status(const Status& other);
+struct GameStatus {
+    GameStatus();
+    GameStatus(const GameStatus& other);
     void clear();
     void print_status() const;
     bool can_castle_kingside(ChessColour colour) const;

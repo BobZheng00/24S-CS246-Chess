@@ -2,12 +2,12 @@
 #include "move.h" 
 #include "board.h"
 
-Status::Status() {
+GameStatus::GameStatus() {
     clear();
 }
 
 // Deep copy of unique_ptr-managed resources
-Status::Status(const Status& other): result(other.result), 
+GameStatus::GameStatus(const GameStatus& other): result(other.result), 
     move_history(std::make_unique<MoveHistory>()),
     cur_turn(other.cur_turn),
     white_can_castle_kingside(other.white_can_castle_kingside),
@@ -24,7 +24,7 @@ Status::Status(const Status& other): result(other.result),
 }
 
 
-void Status::clear() {
+void GameStatus::clear() {
     result = Result::Unstarted;
     move_history = std::make_unique<MoveHistory>();
     move_history->reset();
@@ -37,15 +37,15 @@ void Status::clear() {
     black_last_double_pawn_push = std::make_unique<BoardPosn>(-1, -1);
 }
 
-bool Status::can_castle_kingside(ChessColour colour) const {
+bool GameStatus::can_castle_kingside(ChessColour colour) const {
     return colour == ChessColour::White ? white_can_castle_kingside : black_can_castle_kingside;
 }
 
-bool Status::can_castle_queenside(ChessColour colour) const {
+bool GameStatus::can_castle_queenside(ChessColour colour) const {
     return colour == ChessColour::White ? white_can_castle_queenside : black_can_castle_queenside;
 }
 
-UniqueMove Status::king_unable_castling(ChessColour colour) const {
+UniqueMove GameStatus::king_unable_castling(ChessColour colour) const {
     switch (colour) {
     case ChessColour::White:
         if (white_can_castle_kingside && white_can_castle_queenside) {
@@ -66,12 +66,12 @@ UniqueMove Status::king_unable_castling(ChessColour colour) const {
         }
         break;
     default:
-        return UniqueMove::None;
+        return UniqueMove::Normal;
     }
-    return UniqueMove::None;
+    return UniqueMove::Normal;
 }
 
-void Status::print_status() const {
+void GameStatus::print_status() const {
     switch (result) {
     case Result::Unstarted:
         std::cout << "Game has not started yet." << std::endl;
@@ -108,6 +108,6 @@ void Status::print_status() const {
     std::cout << "Black last double pawn push: " << (*black_last_double_pawn_push == BoardPosn::Invalid ? "None" : black_last_double_pawn_push->to_string()) << std::endl;
 }
 
-ChessColour Status::next_turn() {
+ChessColour GameStatus::next_turn() {
     return cur_turn = (to_underlying(cur_turn)) ? ChessColour::Black : ChessColour::White;
 }

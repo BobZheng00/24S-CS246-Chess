@@ -1,7 +1,11 @@
 #include <iostream>
+#include "status.h"
 #include "observer.h"
+#include "piece.h"
+#include "move.h"
+#include "board.h"
 
-TextDisplay::TextDisplay() {
+TextDisplay::TextDisplay(BoardSubject* p_board_subj): _p_board_subj{p_board_subj} {
     _p_board_subj->attach(this);
 }
 
@@ -21,7 +25,7 @@ void TextDisplay::update_board(std::unique_ptr<std::vector<BoardPosn>> b, Result
     std::cout << "  a b c d e f g h" << std::endl << std::endl;
 }
 
-GraphicDisplay::GraphicDisplay() : _window{Xwindow(4000, 4000)} {
+GraphicDisplay::GraphicDisplay(BoardSubject* p_board_subj): _window{Xwindow(4000, 4000)}, _p_board_subj{p_board_subj} {
     _p_board_subj->attach(this);
     const int squareSize = 500;
     const int boardSize = 8;

@@ -1,3 +1,5 @@
+#include "board.h"
+#include "observer.h"
 #include "chessgame.h"
 #include "player.h"
 #include <string>
@@ -13,7 +15,7 @@ private:
     void handle_player_sign_up(std::string command);
     void handle_resign();
     void handle_set_up();
-    void handle_move();
+    void handle_move(std::string command);
     void handle_undo();
     void print_score() const;
 
