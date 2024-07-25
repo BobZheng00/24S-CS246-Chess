@@ -2,16 +2,26 @@
 #include "movefactory.h"
 #include "chessgame.h"
 #include "move.h"
+#include <iostream>
 #include <memory>
 #include <cstdlib>
 #include <ctime>
 
-ComputerLv1::ComputerLv1(ChessGame& game) : ComputerPlayer(game) {
+RawMove HumanPlayer::get_move() const {
+    std::string from, to;
+    std::cout << "Enter move: ";
+    std::cin >> from >> to;
+    return { BoardPosn::Invalid, BoardPosn::Invalid };
+}
+
+ComputerPlayer::ComputerPlayer(ChessGame* game) : game(game) {}
+
+ComputerLv1::ComputerLv1(ChessGame* game) : ComputerPlayer(game) {
     std::srand(std::time(nullptr));
 }
 
 RawMove ComputerLv1::get_move() const {
-    std::unique_ptr<PossibleMove> possible_moves = MoveFactory(_board, _status).get_all_moves(game.current_player_color());
+    std::unique_ptr<PossibleMove> possible_moves = game->_move_factory.get_all_moves(game->_status.cur_turn);
     if (possible_moves->moves.empty()) {
         return { BoardPosn::Invalid, BoardPosn::Invalid };
     }
@@ -20,17 +30,17 @@ RawMove ComputerLv1::get_move() const {
     return selected_move;
 }
 
-ComputerLv2::ComputerLv2(ChessGame& game) : ComputerPlayer(game) {
+ComputerLv2::ComputerLv2(ChessGame* game) : ComputerPlayer(game) {
     std::srand(std::time(nullptr));
 }
 
 RawMove ComputerLv2::get_move() const {
-    std::unique_ptr<PossibleMove> possible_moves = MoveFactory(_board, _status).get_all_moves(game.current_player_color());
+    std::unique_ptr<PossibleMove> possible_moves = game->_move_factory.get_all_moves(game->_status.cur_turn);
     std::vector<std::unique_ptr<Move>> check_moves;
     std::vector<std::unique_ptr<Move>> capturing_moves;
     std::vector<std::unique_ptr<Move>> other_moves;
     for (auto& move : possible_moves->moves) {
-        if (game.is_check_after_move(*move)) {
+        if (game->_move_factory.will_move_result_check(*move)) {
             check_moves.emplace_back(std::move(move));
         } else if (dynamic_cast<CaptureMove*>(move.get())) {
             capturing_moves.emplace_back(std::move(move));
@@ -52,20 +62,20 @@ RawMove ComputerLv2::get_move() const {
     }
 }
 
-ComputerLv3::ComputerLv3(ChessGame& game) : ComputerPlayer(game) {
+ComputerLv3::ComputerLv3(ChessGame* game) : ComputerPlayer(game) {
     std::srand(std::time(nullptr));
 }
 
 RawMove ComputerLv3::get_move() const {
-    std::unique_ptr<PossibleMove> possible_moves = MoveFactory(_board, _status).get_all_moves(game.current_player_color());
+    std::unique_ptr<PossibleMove> possible_moves = game->_move_factory.get_all_moves(game->_status.cur_turn);
     std::vector<std::unique_ptr<Move>> safe_moves;
     std::vector<std::unique_ptr<Move>> check_moves;
     std::vector<std::unique_ptr<Move>> capturing_moves;
     std::vector<std::unique_ptr<Move>> other_moves;
     for (auto& move : possible_moves->moves) {
-        if (_status.is_move_safe(*move)) {
+        if (game->_move_factory.is_move_safe(*move)) {
             safe_moves.emplace_back(std::move(move));
-        } else if (game.is_check_after_move(*move)) {
+        } else if (game->_move_factory.will_move_result_check(*move)) {
             check_moves.emplace_back(std::move(move));
         } else if (dynamic_cast<CaptureMove*>(move.get())) {
             capturing_moves.emplace_back(std::move(move));
@@ -90,23 +100,23 @@ RawMove ComputerLv3::get_move() const {
     }
 }
 
-ComputerLv4::ComputerLv4(ChessGame& game) : ComputerPlayer(game) {
+ComputerLv4::ComputerLv4(ChessGame* game) : ComputerPlayer(game) {
     std::srand(std::time(nullptr));
 }
 
 RawMove ComputerLv4::get_move() const {
-    std::unique_ptr<PossibleMove> possible_moves = MoveFactory(_board, _status).get_all_moves(game.current_player_color());
+    std::unique_ptr<PossibleMove> possible_moves = game->_move_factory.get_all_moves(game->_status.cur_turn);
     std::vector<std::unique_ptr<Move>> valuable_moves;
     std::vector<std::unique_ptr<Move>> safe_moves;
     std::vector<std::unique_ptr<Move>> check_moves;
     std::vector<std::unique_ptr<Move>> capturing_moves;
     std::vector<std::unique_ptr<Move>> other_moves;
     for (auto& move : possible_moves->moves) {
-        if (dynamic_cast<CaptureMove*>(move.get()) && _status.is_capture_valuable(*move)) {
-            valuable_captures.emplace_back(std::move(move));
-        } else if (_status.is_move_safe(*move)) {
+        if (dynamic_cast<CaptureMove*>(move.get()) && game->_move_factory.is_capture_valuable(*dynamic_cast<CaptureMove*>(move.get()))) {
+            valuable_moves.emplace_back(std::move(move));
+        } else if (game->_move_factory.is_move_safe(*move)) {
             safe_moves.emplace_back(std::move(move));
-        } else if (game.is_check_after_move(*move)) {
+        } else if (game->_move_factory.will_move_result_check(*move)) {
             check_moves.emplace_back(std::move(move));
         } else if (dynamic_cast<CaptureMove*>(move.get())) {
             capturing_moves.emplace_back(std::move(move));
@@ -114,9 +124,9 @@ RawMove ComputerLv4::get_move() const {
             other_moves.emplace_back(std::move(move));
         }
     }
-    if (!valuable_captures.empty()) {
-        int move_index = std::rand() % valuable_captures.size();
-        return valuable_captures[move_index]->get_raw_move();
+    if (!valuable_moves.empty()) {
+        int move_index = std::rand() % valuable_moves.size();
+        return valuable_moves[move_index]->get_raw_move();
     } else if (!safe_moves.empty()) {
         int move_index = std::rand() % safe_moves.size();
         return safe_moves[move_index]->get_raw_move();

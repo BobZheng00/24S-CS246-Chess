@@ -1,15 +1,55 @@
 #include "chessgame.h"
 
+std::unique_ptr<std::vector<BoardPosn>> get_rerendered_posns(const Move* move) {
+    if (dynamic_cast<const BasicMove*>(move)) {
+        std::unique_ptr<std::vector<BoardPosn>> posns = std::make_unique<std::vector<BoardPosn>>();
+        posns->push_back(move->from);
+        posns->push_back(move->to);
+        return posns;
+    }
+    else if (dynamic_cast<const CaptureMove*>(move)) {
+        std::unique_ptr<std::vector<BoardPosn>> posns = std::make_unique<std::vector<BoardPosn>>();
+        posns->push_back(move->from);
+        posns->push_back(move->to);
+        posns->push_back(dynamic_cast<const CaptureMove*>(move)->captured_posn);
+        return posns;
+    }
+    else if (dynamic_cast<const PromotionMove*>(move)) {
+        std::unique_ptr<std::vector<BoardPosn>> posns = std::make_unique<std::vector<BoardPosn>>();
+        posns->push_back(move->from);
+        posns->push_back(move->to);
+        return posns;
+    }
+    else if (dynamic_cast<const CastlingMove*>(move)) {
+        std::unique_ptr<std::vector<BoardPosn>> posns = std::make_unique<std::vector<BoardPosn>>();
+        posns->push_back(move->from);
+        posns->push_back(move->to);
+        posns->push_back(dynamic_cast<const CastlingMove*>(move)->rook_from);
+        posns->push_back(dynamic_cast<const CastlingMove*>(move)->rook_to);
+        return posns;
+    }
+    return nullptr;
+}
+
 ChessGame::ChessGame() : _status(), _board(), _move_factory(_board, _status) {}
 
 void ChessGame::regular_init() {
+    reset();
+    std::unique_ptr<std::vector<BoardPosn>> posns{new std::vector<BoardPosn>};
     _board.standard_init();
     _status.clear();
+    for (int file = 0; file < 8; ++file) {
+        for (int rank = 0; rank < 8; ++rank) {
+            if (_board.get_piece(file, rank)) {
+                posns->push_back(BoardPosn(file, rank));
+            }
+        }
+    }
+    _board.notify_observers(std::move(posns), _status.result);
 }
 
 void ChessGame::setup_init() {
-    _board.clear();
-    _status.clear();
+    reset();
     _status.black_can_castle_kingside = false;
     _status.black_can_castle_queenside = false;
     _status.white_can_castle_kingside = false;
@@ -17,8 +57,17 @@ void ChessGame::setup_init() {
 }
 
 void ChessGame::reset() {
+    std::unique_ptr<std::vector<BoardPosn>> posns{new std::vector<BoardPosn>};
+    for (int file = 0; file < 8; ++file) {
+        for (int rank = 0; rank < 8; ++rank) {
+            if (_board.get_piece(file, rank)) {
+                posns->push_back(BoardPosn(file, rank));
+            }
+        }
+    }
     _board.clear();
     _status.clear();
+    _board.notify_observers(std::move(posns), _status.result);
 }
 
 void ChessGame::set_turn(ChessColour colour) {
@@ -119,7 +168,7 @@ bool ChessGame::execute_move(const BoardPosn& from, const BoardPosn& to, std::op
                 _status.result = Result::Unfinished;
             }
             _status.move_history->push_move(std::move(move));
-            _board.notify_observers(nullptr, _status.result);
+            _board.notify_observers(get_rerendered_posns(_status.move_history->last_move()), _status.result);
             return true;
         }
     }
@@ -128,7 +177,8 @@ bool ChessGame::execute_move(const BoardPosn& from, const BoardPosn& to, std::op
 }
 
 void ChessGame::undo_move() {
-    _status.move_history->undo_last_move(_board, _status);
+    std::unique_ptr<std::vector<BoardPosn>> posns = get_rerendered_posns(_status.move_history->last_move());
+    if (!_status.move_history->undo_last_move(_board, _status)) return;
     if (_move_factory.is_in_check(_status.cur_turn)) {
         if (_move_factory.is_checkmated()) {
             if (_status.cur_turn == ChessColour::White) {
@@ -148,5 +198,5 @@ void ChessGame::undo_move() {
     else {
         _status.result = Result::Unfinished;
     }
-    _board.notify_observers(nullptr, _status.result);
+    _board.notify_observers(std::move(posns), _status.result);
 }

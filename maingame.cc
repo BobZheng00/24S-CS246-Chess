@@ -3,6 +3,8 @@
 #include <optional>
 #include <sstream>
 #include <iostream>
+#include <memory>
+#include "observer.h"
 
 // problem1: how to deal with promotion (determine if the promotion move is valid first?)
 // problem2: how to redisplay of the board after each set_up command (which place to place observers)
@@ -25,8 +27,7 @@ bool is_computer_player(std::string player_type)
     return false;
 }
 
-const BoardPosn &posn_composed(std::string posn)
-{ // convert a string (e.g. "E6") to BoardPosn
+BoardPosn posn_composed(std::string posn) { // convert a string (e.g. "E6") to BoardPosn
     char col;
     int row;
 
@@ -71,8 +72,12 @@ std::unique_ptr<BasePlayer> create_player(const std::string &playerType, ChessGa
 
 //----------------------------------helper func end----------------------------------
 
-void MainGame::run()
-{
+MainGame::MainGame(): _p1{nullptr}, _p2{nullptr}, _game{}, _text_observer{nullptr}, _graphics_observer{nullptr}, white_score{0}, black_score{0}, currentTurn{"White"}, white_player_type{}, black_player_type{}, gameRunning{false}, inSetupMode{false} {
+    _text_observer = std::make_unique<TextDisplay>(_game.get_board_for_observers());
+    _graphics_observer = std::make_unique<GraphicDisplay>(_game.get_board_for_observers());
+}
+
+void MainGame::run() {
 
     std::string command;
     // std::vector<BoardObserver *> observers;

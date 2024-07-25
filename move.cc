@@ -217,10 +217,10 @@ void MoveHistory::reset() {
     std::stack<std::unique_ptr<Move>>().swap(moves);
 }
 
-void MoveHistory::undo_last_move(Board& board, GameStatus& status) {
+bool MoveHistory::undo_last_move(Board& board, GameStatus& status) {
     if (moves.empty()) {
         std::cerr << "No moves to undo." << std::endl;
-        return;
+        return false;
     }
     moves.top()->undo(board, status);
     moves.pop();
@@ -230,7 +230,14 @@ void MoveHistory::undo_last_move(Board& board, GameStatus& status) {
     else if (!moves.empty() && moves.top()->move_type == UniqueMove::WhiteDoublePawnPush) {
         status.white_last_double_pawn_push = std::make_unique<BoardPosn>(moves.top()->to.file, moves.top()->to.rank);
     }
-    return;
+    return true;
+}
+
+Move* MoveHistory::last_move() const {
+    if (moves.empty()) {
+        return nullptr;
+    }
+    return moves.top().get();
 }
 
 bool PossibleMove::is_possible_move(BoardPosn& from, BoardPosn& to) const {
