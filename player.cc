@@ -37,18 +37,24 @@ ComputerLv2::ComputerLv2(ChessGame* game) : ComputerPlayer(game) {
 RawMove ComputerLv2::get_move() const {
     std::unique_ptr<PossibleMove> possible_moves = game->_move_factory.get_all_moves(game->_status.cur_turn);
     std::vector<std::unique_ptr<Move>> become_checked_moves;
+    std::vector<std::unique_ptr<Move>> checking_moves;
     std::vector<std::unique_ptr<Move>> capturing_moves;
     std::vector<std::unique_ptr<Move>> other_moves;
     for (auto& move : possible_moves->moves) {
         if (game->_move_factory.will_move_result_check(*move)) {
             become_checked_moves.emplace_back(std::move(move));
+        } else if (game->_move_factory.will_move_check_opponent(*move)) {
+            checking_moves.emplace_back(std::move(move));
         } else if (dynamic_cast<CaptureMove*>(move.get())) {
             capturing_moves.emplace_back(std::move(move));
         } else {
             other_moves.emplace_back(std::move(move));
         }
     }
-    if (!capturing_moves.empty()) {
+    if (!checking_moves.empty()) {
+        int move_index = std::rand() % checking_moves.size();
+        return checking_moves[move_index]->get_raw_move();
+    } else if (!capturing_moves.empty()) {
         int move_index = std::rand() % capturing_moves.size();
         return capturing_moves[move_index]->get_raw_move();
     } else if (!other_moves.empty()) {
@@ -68,6 +74,7 @@ RawMove ComputerLv3::get_move() const {
     std::vector<std::unique_ptr<Move>> become_checked_moves;
     std::vector<std::unique_ptr<Move>> evading_capture_moves;
     std::vector<std::unique_ptr<Move>> safe_moves;
+    std::vector<std::unique_ptr<Move>> checking_moves;
     std::vector<std::unique_ptr<Move>> capturing_moves;
     std::vector<std::unique_ptr<Move>> other_moves;
     for (auto& move : possible_moves->moves) {
@@ -77,6 +84,8 @@ RawMove ComputerLv3::get_move() const {
             evading_capture_moves.emplace_back(std::move(move));
         } else if (game->_move_factory.is_move_safe(*move)) {
             safe_moves.emplace_back(std::move(move));
+        } else if (game->_move_factory.will_move_check_opponent(*move)) {
+            checking_moves.emplace_back(std::move(move));
         } else if (dynamic_cast<CaptureMove*>(move.get())) {
             capturing_moves.emplace_back(std::move(move));
         } else {
@@ -89,6 +98,9 @@ RawMove ComputerLv3::get_move() const {
     } else if (!safe_moves.empty()) {
         int move_index = std::rand() % safe_moves.size();
         return safe_moves[move_index]->get_raw_move();
+    } else if (!checking_moves.empty()) {
+        int move_index = std::rand() % checking_moves.size();
+        return checking_moves[move_index]->get_raw_move();
     } else if (!capturing_moves.empty()) {
         int move_index = std::rand() % capturing_moves.size();
         return capturing_moves[move_index]->get_raw_move();
@@ -111,6 +123,7 @@ RawMove ComputerLv4::get_move() const {
     std::vector<std::unique_ptr<Move>> valuable_moves;
     std::vector<std::unique_ptr<Move>> evading_capture_moves;
     std::vector<std::unique_ptr<Move>> safe_moves;
+    std::vector<std::unique_ptr<Move>> checking_moves;
     std::vector<std::unique_ptr<Move>> capturing_moves;
     std::vector<std::unique_ptr<Move>> other_moves;
     for (auto& move : possible_moves->moves) {
@@ -124,6 +137,8 @@ RawMove ComputerLv4::get_move() const {
             evading_capture_moves.emplace_back(std::move(move));
         } else if (game->_move_factory.is_move_safe(*move)) {
             safe_moves.emplace_back(std::move(move));
+        } else if (game->_move_factory.will_move_check_opponent(*move)) {
+            checking_moves.emplace_back(std::move(move));
         } else if (dynamic_cast<CaptureMove*>(move.get())) {
             capturing_moves.emplace_back(std::move(move));
         } else {
@@ -142,6 +157,9 @@ RawMove ComputerLv4::get_move() const {
     } else if (!safe_moves.empty()) {
         int move_index = std::rand() % safe_moves.size();
         return safe_moves[move_index]->get_raw_move();
+    } else if (!checking_moves.empty()) {
+        int move_index = std::rand() % checking_moves.size();
+        return checking_moves[move_index]->get_raw_move();
     } else if (!capturing_moves.empty()) {
         int move_index = std::rand() % capturing_moves.size();
         return capturing_moves[move_index]->get_raw_move();
