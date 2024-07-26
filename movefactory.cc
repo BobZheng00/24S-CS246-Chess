@@ -360,7 +360,6 @@ std::unique_ptr<PossibleMove> MoveFactory::_pawn_moves(const BoardPosn& posn) co
     // promotion case 
     if (on_nth_rank(_board.get_piece(posn).value().colour, posn, 7)) {
         auto insert_valid_posn = [this, posn](PossibleMove* pm, const BoardPosn& cur_posn, bool should_capture) {
-            // std::cout << cur_posn.file << ", " << cur_posn.rank << std::endl;
             if (!cur_posn.on_board()) {
                 return false;
             } // promote to Queen by default
@@ -384,7 +383,6 @@ std::unique_ptr<PossibleMove> MoveFactory::_pawn_moves(const BoardPosn& posn) co
     }
     else {
         auto insert_valid_posn = [this, posn](PossibleMove* pm, const BoardPosn& cur_posn, bool should_capture, bool should_enpassant) {
-            // std::cout << cur_posn.file << ", " << cur_posn.rank << std::endl;
             if (!cur_posn.on_board()) {
                 return false;
             } // Basic Move

@@ -174,7 +174,7 @@ void MainGame::reset_game()
 
     // Reinitialize observers if necessary
     _text_observer = std::make_unique<TextDisplay>(_game.get_board_for_observers());
-    // _graphics_observer = std::make_unique<GraphicDisplay>(_game.get_board_for_observers());
+    _graphics_observer = std::make_unique<GraphicDisplay>(_game.get_board_for_observers());
 }
 
 void MainGame::handle_player_sign_up(std::string command)
