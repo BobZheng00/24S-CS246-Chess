@@ -37,7 +37,7 @@ GraphicDisplay::GraphicDisplay(BoardSubject* p_board_subj): _window{Xwindow(400,
     _window.fillRectangle(0, 0, squareSize * boardSize, squareSize * boardSize, Xwindow::White);
     for (int rank = 0; rank < boardSize; ++rank) {
         for (int file = 0; file < boardSize; ++file) {
-            bool isWhiteSquare = ((rank + file) % 2 == 0);
+            bool isWhiteSquare = ((rank + file) % 2 != 0);
             int x = file * squareSize;
             int y = (7-rank) * squareSize;
             if (isWhiteSquare) {
@@ -64,7 +64,7 @@ void GraphicDisplay::update_board(std::shared_ptr<std::vector<BoardPosn>> b, Res
     for (auto& posn : *b) {
         int file = posn.file;
         int rank = posn.rank;
-        bool isWhiteSquare = ((rank + file) % 2 == 0);
+        bool isWhiteSquare = ((rank + file) % 2 != 0);
         int x = file * squareSize;
         int y = (7-rank) * squareSize;
         if (isWhiteSquare) {
