@@ -198,6 +198,8 @@ void MainGame::handle_set_up()
             {
                 _game.set_status(Result::Unfinished);
                 break;
+            } else {
+                std::cout << "Invalid setup. Please ensure all conditions are met." << std::endl;
             }
         }
         if (setup_command == "+")
