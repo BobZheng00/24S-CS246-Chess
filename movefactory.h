@@ -15,11 +15,13 @@ public:
     
     bool is_move_safe(const Move& move) const;
     bool is_capture_valuable(const CaptureMove& move) const;
+    bool is_move_evading_capture(const Move& move) const;
     bool will_move_result_check(const Move& move) const;
+    bool will_attack_multi_pieces_next(const Move& move) const;
     bool is_in_check(ChessColour colour) const;
     bool is_checkmated() const;
     bool is_stalemated() const;
-// private:
+private:
     void _diagonal_moves(PossibleMove* pm, const BoardPosn& posn, UniqueMove move_type = UniqueMove::Normal) const;
     void _linear_moves(PossibleMove* pm, const BoardPosn& posn, UniqueMove move_type = UniqueMove::Normal) const;
     // We assert corresponding piece exists on the position for the following move generation
