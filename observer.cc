@@ -32,7 +32,7 @@ void TextDisplay::update_board(std::unique_ptr<std::vector<BoardPosn>> b, Result
 
 GraphicDisplay::GraphicDisplay(BoardSubject* p_board_subj): _window{Xwindow(4000, 4000)}, _p_board_subj{p_board_subj} {
     _p_board_subj->attach(this);
-    const int squareSize = 500;
+    const int squareSize = 50;
     const int boardSize = 8;
     _window.fillRectangle(0, 0, squareSize * boardSize, squareSize * boardSize, Xwindow::White);
     for (int rank = 0; rank < boardSize; ++rank) {
@@ -48,8 +48,10 @@ GraphicDisplay::GraphicDisplay(BoardSubject* p_board_subj): _window{Xwindow(4000
             int fontSize = 24;
             int textX = x + squareSize / 2 - fontSize / 2;
             int textY = y + squareSize / 2 + fontSize / 2;
-            std::string pieceChar = std::string(1, _p_board_subj->get_piece(file, rank).value().to_char());
-            _window.drawString(textX, textY, pieceChar);
+            /*if (_p_board_subj->get_piece(file, rank)) {
+                std::string pieceChar = std::string(1, _p_board_subj->get_piece(file, rank).value().to_char());
+                _window.drawString(textX, textY, pieceChar, Xwindow::Blue);
+            }*/
         }
     }
 }
@@ -59,7 +61,7 @@ GraphicDisplay::~GraphicDisplay() {
 }
 
 void GraphicDisplay::update_board(std::unique_ptr<std::vector<BoardPosn>> b, Result r) const {
-    const int squareSize = 500;
+    const int squareSize = 50;
     const int boardSize = 8;
     for (auto& posn : *b) {
         int file = posn.file;
@@ -72,12 +74,16 @@ void GraphicDisplay::update_board(std::unique_ptr<std::vector<BoardPosn>> b, Res
         } else {
             _window.fillRectangle(x, y, squareSize, squareSize, Xwindow::Black);
         }
-        if (_p_board_subj->get_piece(file, rank)) {
+        int fontSize = 24;
+        int textX = x + squareSize / 2 - fontSize / 2;
+        int textY = y + squareSize / 2 + fontSize / 2;
+        _window.drawString(textX, textY, "fuck", Xwindow::Blue);
+        /*if (_p_board_subj->get_piece(file, rank)) {
             std::string pieceChar = std::string(1, _p_board_subj->get_piece(file, rank).value().to_char());
             int fontSize = 24;
             int textX = x + squareSize / 2 - fontSize / 2;
             int textY = y + squareSize / 2 + fontSize / 2;
-            _window.drawString(textX, textY, pieceChar);
-        }
+            _window.drawString(textX, textY, pieceChar, Xwindow::Blue);
+        }*/
     }
 }

@@ -75,7 +75,7 @@ std::unique_ptr<BasePlayer> create_player(const std::string &playerType, ChessGa
 MainGame::MainGame() : _p1{nullptr}, _p2{nullptr}, _game{}, _text_observer{nullptr}, _graphics_observer{nullptr}, white_score{0}, black_score{0}, currentTurn{"white"}, white_player_type{}, black_player_type{}
 {
     _text_observer = std::make_unique<TextDisplay>(_game.get_board_for_observers());
-    // _graphics_observer = std::make_unique<GraphicDisplay>(_game.get_board_for_observers());
+    _graphics_observer = std::make_unique<GraphicDisplay>(_game.get_board_for_observers());
 }
 
 void MainGame::run()
@@ -202,6 +202,8 @@ void MainGame::handle_set_up()
             {
                 _game.set_status(Result::Unfinished);
                 break;
+            } else {
+                std::cout << "Invalid setup. Please ensure all conditions are met." << std::endl;
             }
         }
         if (setup_command == "+")
@@ -317,29 +319,30 @@ void MainGame::handle_move(std::string command)
         const BoardPosn &to = posn_composed(final_pos);
 
         char piece_type;
-        if (!iss.eof())
-        {
-            iss >> piece_type;
-            if ((piece_type == 'Q') || (piece_type == 'q'))
-            {
-                _game.execute_move(from, to, std::make_optional<PieceType>(PieceType::Queen));
-            }
-            if ((piece_type == 'R') || (piece_type == 'r'))
-            {
-                _game.execute_move(from, to, std::make_optional<PieceType>(PieceType::Rook));
-            }
-            if ((piece_type == 'B') || (piece_type == 'b'))
-            {
-                _game.execute_move(from, to, std::make_optional<PieceType>(PieceType::Bishop));
-            }
-            if ((piece_type == 'N') || (piece_type == 'n'))
-            {
-                _game.execute_move(from, to, std::make_optional<PieceType>(PieceType::Knight));
-            }
-        }
-        else
-        {
-            _game.execute_move(from, to);
+        if (iss) {
+                if (!iss.eof()){
+                    iss >> piece_type;
+                    if ((piece_type == 'Q') || (piece_type == 'q'))
+                    {
+                        _game.execute_move(from, to, std::make_optional<PieceType>(PieceType::Queen));
+                    }
+                    if ((piece_type == 'R') || (piece_type == 'r'))
+                    {
+                        _game.execute_move(from, to, std::make_optional<PieceType>(PieceType::Rook));
+                    }
+                    if ((piece_type == 'B') || (piece_type == 'b'))
+                    {
+                        _game.execute_move(from, to, std::make_optional<PieceType>(PieceType::Bishop));
+                    }
+                    if ((piece_type == 'N') || (piece_type == 'n'))
+                    {
+                        _game.execute_move(from, to, std::make_optional<PieceType>(PieceType::Knight));
+                    }
+                }
+                else
+                {
+                    _game.execute_move(from, to);
+                }
         }
     }
     else if ((_game.get_turn() == ChessColour::White && is_computer_player(white_player_type)) || (_game.get_turn() == ChessColour::Black && is_computer_player(black_player_type))) {
