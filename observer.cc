@@ -61,7 +61,6 @@ GraphicDisplay::~GraphicDisplay() {
 
 void GraphicDisplay::update_board(std::shared_ptr<std::vector<BoardPosn>> b, Result r) const {
     const int squareSize = 50;
-    const int boardSize = 8;
     for (auto& posn : *b) {
         int file = posn.file;
         int rank = posn.rank;

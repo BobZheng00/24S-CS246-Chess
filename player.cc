@@ -148,8 +148,9 @@ RawMove ComputerLv4::get_move() const {
         } else if (game->_move_factory.will_attack_multi_pieces_next(*move)) {
             forking_moves.emplace_back(std::move(move));
         } else if (dynamic_cast<CaptureMove*>(move.get()) && game->_move_factory.is_capture_valuable(*dynamic_cast<CaptureMove*>(move.get()))) {
+            std::cout << "valuable" << std::endl;
             valuable_moves.emplace_back(std::move(move));
-        } else if (!evading_capture_moves.empty()) {
+        } else if (game->_move_factory.is_move_evading_capture(*move)) {
             evading_capture_moves.emplace_back(std::move(move));
         } else if (game->_move_factory.is_move_safe(*move)) {
             safe_moves.emplace_back(std::move(move));
@@ -161,12 +162,12 @@ RawMove ComputerLv4::get_move() const {
             other_moves.emplace_back(std::move(move));
         }
     }
-    if (!forking_moves.empty()) {
-        int move_index = std::rand() % forking_moves.size();
-        return forking_moves[move_index]->get_raw_move();
-    } else if (!valuable_moves.empty()) {
+    if (!valuable_moves.empty()) {
         int move_index = std::rand() % valuable_moves.size();
         return valuable_moves[move_index]->get_raw_move();
+    } else if (!forking_moves.empty()) {
+        int move_index = std::rand() % forking_moves.size();
+        return forking_moves[move_index]->get_raw_move();
     } else if (!evading_capture_moves.empty()) {
         int move_index = std::rand() % evading_capture_moves.size();
         return evading_capture_moves[move_index]->get_raw_move();

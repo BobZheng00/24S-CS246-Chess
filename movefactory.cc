@@ -18,7 +18,7 @@ BoardPosn push_n_rank(ChessColour colour, const BoardPosn& posn, int rank) {
     }
 }
 
-bool will_be_attack_by_king(const Board& board, const BoardPosn& posn, ChessColour colour) {
+bool will_be_attacked_by_king(const Board& board, const BoardPosn& posn, ChessColour colour) {
     if ((posn+BoardPosn{1, 1}).on_board() && board.get_piece(posn+BoardPosn{1, 1}) == Piece{PieceType::King, opposite_colour(colour)}) return true;
     if ((posn+BoardPosn{-1, 1}).on_board() && board.get_piece(posn+BoardPosn{-1, 1}) == Piece{PieceType::King, opposite_colour(colour)}) return true;
     if ((posn+BoardPosn{1, -1}).on_board() && board.get_piece(posn+BoardPosn{1, -1}) == Piece{PieceType::King, opposite_colour(colour)}) return true;
@@ -27,6 +27,7 @@ bool will_be_attack_by_king(const Board& board, const BoardPosn& posn, ChessColo
     if ((posn+BoardPosn{-1, 0}).on_board() && board.get_piece(posn+BoardPosn{-1, 0}) == Piece{PieceType::King, opposite_colour(colour)}) return true;
     if ((posn+BoardPosn{0, 1}).on_board() && board.get_piece(posn+BoardPosn{0, 1}) == Piece{PieceType::King, opposite_colour(colour)}) return true;
     if ((posn+BoardPosn{0, -1}).on_board() && board.get_piece(posn+BoardPosn{0, -1}) == Piece{PieceType::King, opposite_colour(colour)}) return true;
+    return false;
 }
 
 std::unique_ptr<PossibleMove> MoveFactory::get_moves(const BoardPosn& posn) const {
@@ -55,7 +56,7 @@ bool MoveFactory::is_move_safe(const Move& move) const {
 
     move.execute(tmp_board, tmp_status);
 
-    if (will_be_attack_by_king(tmp_board, move.to, move.moved_piece.colour)) return false;
+    if (will_be_attacked_by_king(tmp_board, move.to, move.moved_piece.colour)) return false;
 
     MoveFactory tmp_factory{tmp_board, tmp_status};
     auto all_opponent_moves = tmp_factory.get_all_moves(opposite_colour(move.moved_piece.colour));
@@ -69,8 +70,12 @@ bool MoveFactory::is_move_safe(const Move& move) const {
 }
 
 bool MoveFactory::is_capture_valuable(const CaptureMove& move) const {
+    std::cout << "check valuable" << std::endl;
+    std::cout << move.from.file << ", " << move.from.rank << " -> " << move.to.file << ", " << move.to.rank << std::endl;
     if (is_move_safe(move)) return true;
+    std::cout << "capture is not safe" << std::endl;
     if (get_piece_value(move.captured_piece.type) > get_piece_value(move.moved_piece.type)) return true;
+    std::cout << "capture is not valuable" << std::endl;
     return false;
 }
 
@@ -131,7 +136,7 @@ bool MoveFactory::will_attack_multi_pieces_next(const Move& move) const {
         }
     }
 
-    return count > 1;
+    return count > 1 && is_move_safe(move);
 }
 
 bool MoveFactory::will_move_check_opponent(const Move& move) const {
