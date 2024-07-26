@@ -16,6 +16,7 @@ public:
     bool is_move_safe(const Move& move) const;
     bool is_capture_valuable(const CaptureMove& move) const;
     bool is_move_evading_capture(const Move& move) const;
+    bool will_move_check_opponent(const Move& move) const;
     bool will_move_result_check(const Move& move) const;
     bool will_attack_multi_pieces_next(const Move& move) const;
     bool is_in_check(ChessColour colour) const;

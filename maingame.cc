@@ -84,31 +84,6 @@ void MainGame::run()
     std::string command;
     while (getline(std::cin, command))
     {
-        if (_game.get_status() == Result::WhiteWin)
-        {
-            std::cout << "White wins." << std::endl;
-            break;
-        }
-        if (_game.get_status() == Result::BlackWin)
-        {
-            std::cout << "Black wins." << std::endl;
-            break;
-        }
-        if (_game.get_status() == Result::Draw)
-        {
-            std::cout << "Game is a draw." << std::endl;
-            break;
-        }
-
-        if (_game.get_status() == Result::WhiteInCheck)
-        {
-            std::cout << "White is in check." << std::endl;
-        }
-        if (_game.get_status() == Result::BlackInCheck)
-        {
-            std::cout << "Black is in check." << std::endl;
-        }
-
         if (command.rfind("game", 0) == 0)
         {
             handle_player_sign_up(command);
@@ -130,6 +105,35 @@ void MainGame::run()
         if (command == "undo")
         {
             handle_undo();
+        }
+
+        if (_game.get_status() == Result::WhiteWin)
+        {
+            std::cout << "White wins." << std::endl;
+            white_score++;
+            break;
+        }
+        if (_game.get_status() == Result::BlackWin)
+        {
+            std::cout << "Black wins." << std::endl;
+            black_score++;
+            break;
+        }
+        if (_game.get_status() == Result::Draw)
+        {
+            std::cout << "Game is a draw." << std::endl;
+            white_score += 0.5;
+            black_score += 0.5;
+            break;
+        }
+
+        if (_game.get_status() == Result::WhiteInCheck)
+        {
+            std::cout << "White is in check." << std::endl;
+        }
+        if (_game.get_status() == Result::BlackInCheck)
+        {
+            std::cout << "Black is in check." << std::endl;
         }
     }
 
@@ -341,7 +345,6 @@ void MainGame::handle_move(std::string command)
                 }
         }
     }
-
     else if ((_game.get_turn() == ChessColour::White && is_computer_player(white_player_type)) || (_game.get_turn() == ChessColour::Black && is_computer_player(black_player_type))) {
         if (_game.get_turn() == ChessColour::White && is_computer_player(white_player_type)) {
             std::cout << "computer is supposed to move now" << std::endl;

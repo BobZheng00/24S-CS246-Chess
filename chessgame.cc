@@ -150,7 +150,6 @@ bool ChessGame::execute_move(const BoardPosn& from, const BoardPosn& to, std::op
             }
             if (_move_factory.will_move_result_check(*move)) return false;
             move->execute(_board, _status); // player turn has changed
-
             // check for checkmate, stalemate, and check
             if (_move_factory.is_in_check(_status.cur_turn)) {
                 if (_move_factory.is_checkmated()) {
