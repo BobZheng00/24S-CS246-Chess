@@ -75,7 +75,7 @@ std::unique_ptr<BasePlayer> create_player(const std::string &playerType, ChessGa
 MainGame::MainGame() : _p1{nullptr}, _p2{nullptr}, _game{}, _text_observer{nullptr}, _graphics_observer{nullptr}, white_score{0}, black_score{0}, currentTurn{"white"}, white_player_type{}, black_player_type{}
 {
     _text_observer = std::make_unique<TextDisplay>(_game.get_board_for_observers());
-    // _graphics_observer = std::make_unique<GraphicDisplay>(_game.get_board_for_observers());
+    _graphics_observer = std::make_unique<GraphicDisplay>(_game.get_board_for_observers());
 }
 
 void MainGame::run()
