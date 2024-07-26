@@ -87,6 +87,8 @@ bool MoveFactory::is_move_evading_capture(const Move& move) const {
         }
     }
 
+    if (!is_in_capture) return false;
+
     move.execute(tmp_board, tmp_status);
 
     auto all_opponent_moves_after = tmp_factory.get_all_moves(opposite_colour(move.moved_piece.colour));
@@ -117,6 +119,16 @@ bool MoveFactory::will_attack_multi_pieces_next(const Move& move) const {
     }
 
     return count > 1;
+}
+
+bool MoveFactory::will_move_check_opponent(const Move& move) const {
+    Board tmp_board = _board;
+    GameStatus tmp_status = _status;
+
+    move.execute(tmp_board, tmp_status);
+
+    MoveFactory tmp_factory{tmp_board, tmp_status};
+    return tmp_factory.is_in_check(opposite_colour(move.moved_piece.colour));
 }
 
 bool MoveFactory::will_move_result_check(const Move& move) const {
