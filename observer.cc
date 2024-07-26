@@ -48,7 +48,6 @@ GraphicDisplay::GraphicDisplay(BoardSubject* p_board_subj): _window{Xwindow(4000
             int fontSize = 24;
             int textX = x + squareSize / 2 - fontSize / 2;
             int textY = y + squareSize / 2 + fontSize / 2;
-            _window.drawString(textX, textY, "fuck", Xwindow::Blue);
             /*if (_p_board_subj->get_piece(file, rank)) {
                 std::string pieceChar = std::string(1, _p_board_subj->get_piece(file, rank).value().to_char());
                 _window.drawString(textX, textY, pieceChar, Xwindow::Blue);
