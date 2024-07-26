@@ -315,29 +315,30 @@ void MainGame::handle_move(std::string command)
         const BoardPosn &to = posn_composed(final_pos);
 
         char piece_type;
-        if (!iss.eof())
-        {
-            iss >> piece_type;
-            if ((piece_type == 'Q') || (piece_type == 'q'))
-            {
-                _game.execute_move(from, to, std::make_optional<PieceType>(PieceType::Queen));
-            }
-            if ((piece_type == 'R') || (piece_type == 'r'))
-            {
-                _game.execute_move(from, to, std::make_optional<PieceType>(PieceType::Rook));
-            }
-            if ((piece_type == 'B') || (piece_type == 'b'))
-            {
-                _game.execute_move(from, to, std::make_optional<PieceType>(PieceType::Bishop));
-            }
-            if ((piece_type == 'N') || (piece_type == 'n'))
-            {
-                _game.execute_move(from, to, std::make_optional<PieceType>(PieceType::Knight));
-            }
-        }
-        else
-        {
-            _game.execute_move(from, to);
+        if (iss) {
+                if (!iss.eof()){
+                    iss >> piece_type;
+                    if ((piece_type == 'Q') || (piece_type == 'q'))
+                    {
+                        _game.execute_move(from, to, std::make_optional<PieceType>(PieceType::Queen));
+                    }
+                    if ((piece_type == 'R') || (piece_type == 'r'))
+                    {
+                        _game.execute_move(from, to, std::make_optional<PieceType>(PieceType::Rook));
+                    }
+                    if ((piece_type == 'B') || (piece_type == 'b'))
+                    {
+                        _game.execute_move(from, to, std::make_optional<PieceType>(PieceType::Bishop));
+                    }
+                    if ((piece_type == 'N') || (piece_type == 'n'))
+                    {
+                        _game.execute_move(from, to, std::make_optional<PieceType>(PieceType::Knight));
+                    }
+                }
+                else
+                {
+                    _game.execute_move(from, to);
+                }
         }
     }
 
