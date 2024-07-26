@@ -26,10 +26,19 @@ RawMove ComputerLv1::get_move() const {
     for (auto& move : possible_king_moves->moves) {
         possible_moves->add_move(std::move(move));
     }
-    if (possible_moves->moves.empty()) {
+    std::vector<std::unique_ptr<PossibleMove>> become_checked_moves;
+    std::vector<std::unique_ptr<PossibleMove>> legal_moves;
+    for (auto& move : possible_moves->moves) {
+        if (game->_move_factory.will_move_result_check(*move)) {
+            become_checked_moves.emplace_back(std::move(move));
+        } else {
+            legal_moves.emplace_back(std::move(move));
+        }
+    }
+    if (legal_moves.empty()) {
         return { BoardPosn::Invalid, BoardPosn::Invalid };
     }
-    int move_index = std::rand() % possible_moves->moves.size();
+    int move_index = std::rand() % legal_moves.size();
     RawMove selected_move = possible_moves->moves[move_index]->get_raw_move();
     return selected_move;
 }
