@@ -30,7 +30,7 @@ void TextDisplay::update_board(std::unique_ptr<std::vector<BoardPosn>> b, Result
 }
 
 
-GraphicDisplay::GraphicDisplay(BoardSubject* p_board_subj): _window{Xwindow(4000, 4000)}, _p_board_subj{p_board_subj} {
+GraphicDisplay::GraphicDisplay(BoardSubject* p_board_subj): _window{Xwindow(400, 400)}, _p_board_subj{p_board_subj} {
     _p_board_subj->attach(this);
     const int squareSize = 50;
     const int boardSize = 8;
