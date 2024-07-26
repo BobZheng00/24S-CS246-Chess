@@ -182,6 +182,9 @@ void MainGame::handle_set_up()
         std::cout << "Cannot enter setup mode while a game is running." << std::endl;
         return;
     }
+
+    _game.setup_init();
+
     _game.set_status(Result::Setup);
     std::cout << "Setup mode entered." << std::endl;
 
