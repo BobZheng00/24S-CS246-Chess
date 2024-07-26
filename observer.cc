@@ -32,7 +32,7 @@ void TextDisplay::update_board(std::unique_ptr<std::vector<BoardPosn>> b, Result
 
 GraphicDisplay::GraphicDisplay(BoardSubject* p_board_subj): _window{Xwindow(4000, 4000)}, _p_board_subj{p_board_subj} {
     _p_board_subj->attach(this);
-    const int squareSize = 500;
+    const int squareSize = 50;
     const int boardSize = 8;
     _window.fillRectangle(0, 0, squareSize * boardSize, squareSize * boardSize, Xwindow::White);
     for (int rank = 0; rank < boardSize; ++rank) {
@@ -61,7 +61,7 @@ GraphicDisplay::~GraphicDisplay() {
 }
 
 void GraphicDisplay::update_board(std::unique_ptr<std::vector<BoardPosn>> b, Result r) const {
-    const int squareSize = 500;
+    const int squareSize = 50;
     const int boardSize = 8;
     for (auto& posn : *b) {
         int file = posn.file;
