@@ -9,6 +9,7 @@ enum class UniqueMove;
 
 enum class Result {
     Unstarted,
+    PlayerRegistered,
     Setup,
     Unfinished,
     WhiteInCheck,

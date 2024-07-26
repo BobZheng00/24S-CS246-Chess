@@ -112,7 +112,7 @@ void MainGame::run()
                 std::cin >> play_again;
 
             if (play_again == "yes") {
-                    reset_game(); // Reset the game state and player scores
+                    reset_game(); // Reset the game state and player
             } else {
                 break; // Exit the loop if the user does not want to play again
             }
@@ -165,7 +165,7 @@ void MainGame::run()
 
 void MainGame::reset_game()
 {
-    _game.regular_init(); // Reset the game object
+    _game.reset(); // Reset the game object
     _p1.reset();
     _p2.reset();
     currentTurn = "white";
@@ -187,7 +187,7 @@ void MainGame::handle_player_sign_up(std::string command)
         _p1 = create_player(white_player_type, _game);
         _p2 = create_player(black_player_type, _game);
 
-        _game.set_status(Result::Unstarted);
+        _game.set_status(Result::PlayerRegistered);
     }
     catch (const std::invalid_argument &e)
     {
@@ -197,7 +197,7 @@ void MainGame::handle_player_sign_up(std::string command)
 
 void MainGame::handle_resign()
 {
-    if ((_game.get_status() == Result::Unstarted) || (_game.get_status() == Result::Setup))
+    if ((_game.get_status() == Result::Unstarted) || (_game.get_status() == Result::Setup) || (_game.get_status() == Result::PlayerRegistered))
     {
         std::cout << "No game is currently running." << std::endl;
         return;
@@ -217,6 +217,12 @@ void MainGame::handle_set_up()
     if (((_game.get_status() == Result::Unfinished) || (_game.get_status() == Result::WhiteInCheck) || (_game.get_status() == Result::BlackInCheck)))
     {
         std::cout << "Cannot enter setup mode while a game is running." << std::endl;
+        return;
+    }
+
+    if (_game.get_status() != Result::PlayerRegistered)
+    {
+        std::cout << "Set up board after both players are signed up." << std::endl;
         return;
     }
 
@@ -338,20 +344,18 @@ void MainGame::handle_move(std::string command)
         std::cout << "No players have signed up." << std::endl;
         return;
     }
-    else if (_game.get_status() == Result::Unstarted)
+    else if (_game.get_status() == Result::PlayerRegistered)
     {
         _game.regular_init();
         _game.set_status(Result::Unfinished);
     }
 
-    std::cout << command << std::endl;
     std::istringstream iss(command);
     std::string cmd;
     iss >> cmd;
 
     if ((_game.get_turn() == ChessColour::White && white_player_type == "human") || (_game.get_turn() == ChessColour::Black && black_player_type == "human"))
     {
-        std::cout << command << std::endl;
         std::string start_pos;
         std::string final_pos;
         iss >> start_pos >> final_pos;

@@ -64,19 +64,21 @@ std::optional<Piece> Board::get_piece(const BoardPosn& posn) const {
 }
 
 void Board::set_piece(int file, int rank, const Piece& piece) {
+    if (file < 0 || file >= 8 || rank < 0 || rank >= 8) return;
     _board[file][rank] = piece;
 }
 
 void Board::set_piece(const BoardPosn& posn, const Piece& piece) {
-    _board[posn.file][posn.rank] = piece;
+    if (posn.on_board()) _board[posn.file][posn.rank] = piece;
 }
 
 void Board::reset_piece(int file, int rank) {
+    if (file < 0 || file >= 8 || rank < 0 || rank >= 8) return;
     _board[file][rank].reset();
 }
 
 void Board::reset_piece(const BoardPosn& posn) {
-    _board[posn.file][posn.rank].reset();
+    if (posn.on_board()) _board[posn.file][posn.rank].reset();
 }
 
 void Board::print_board() {

@@ -81,14 +81,12 @@ ChessColour ChessGame::get_turn() const {
 void ChessGame::set_piece(const BoardPosn& posn, const Piece& piece) {
     _board.set_piece(posn, piece);
     std::unique_ptr<std::vector<BoardPosn>> posns{new std::vector<BoardPosn>{posn}};
-    std::cout << (posns->empty() ? "empty" : "not empty") << std::endl;
     _board.notify_observers(std::move(posns), _status.result);
 }
 
 void ChessGame::reset_piece(const BoardPosn& posn) {
     _board.reset_piece(posn);
     std::unique_ptr<std::vector<BoardPosn>> posns{new std::vector<BoardPosn>{posn}};
-    std::cout << (posns->empty() ? "empty" : "not empty") << std::endl;
     _board.notify_observers(std::move(posns), _status.result);
 }
 
