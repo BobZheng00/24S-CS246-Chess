@@ -111,20 +111,44 @@ void MainGame::run()
         {
             std::cout << "White wins." << std::endl;
             white_score++;
-            break;
+            std::string play_again;
+            std::cout << "Do you want to play again? (yes/no): ";
+                std::cin >> play_again;
+
+            if (play_again == "yes") {
+                    reset_game(); // Reset the game state and player scores
+            } else {
+                break; // Exit the loop if the user does not want to play again
+            }
         }
         if (_game.get_status() == Result::BlackWin)
         {
             std::cout << "Black wins." << std::endl;
             black_score++;
-            break;
+            std::string play_again;
+            std::cout << "Do you want to play again? (yes/no): ";
+                std::cin >> play_again;
+
+            if (play_again == "yes") {
+                    reset_game(); // Reset the game state and player scores
+            } else {
+                break; // Exit the loop if the user does not want to play again
+            }
         }
         if (_game.get_status() == Result::Draw)
         {
             std::cout << "Game is a draw." << std::endl;
             white_score += 0.5;
             black_score += 0.5;
-            break;
+            std::string play_again;
+            std::cout << "Do you want to play again? (yes/no): ";
+                std::cin >> play_again;
+
+            if (play_again == "yes") {
+                    reset_game(); // Reset the game state and player scores
+            } else {
+                break; // Exit the loop if the user does not want to play again
+            }
         }
 
         if (_game.get_status() == Result::WhiteInCheck)
@@ -137,17 +161,17 @@ void MainGame::run()
         }
     }
 
+
     print_score();
+    // Ask if the user wants to play again
 }
 
 
-/*void MainGame::reset_game()
+void MainGame::reset_game()
 {
     _game.regular_init(); // Reset the game object
     _p1.reset();
     _p2.reset();
-    white_score = 0;
-    black_score = 0;
     currentTurn = "white";
     white_player_type.clear();
     black_player_type.clear();
@@ -155,7 +179,7 @@ void MainGame::run()
     // Reinitialize observers if necessary
     _text_observer = std::make_unique<TextDisplay>(_game.get_board_for_observers());
     // _graphics_observer = std::make_unique<GraphicDisplay>(_game.get_board_for_observers());
-}*/
+}
 
 void MainGame::handle_player_sign_up(std::string command)
 {

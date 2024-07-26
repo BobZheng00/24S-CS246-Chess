@@ -18,7 +18,7 @@ private:
     void handle_move(std::string command);
     void handle_undo();
     void print_score() const;
-    //void reset_game();
+    void reset_game();
 
     std::unique_ptr<BasePlayer> _p1, _p2;
     ChessGame _game;
