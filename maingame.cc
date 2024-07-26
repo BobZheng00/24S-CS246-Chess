@@ -6,9 +6,7 @@
 #include <memory>
 #include "observer.h"
 
-// problem1: how to deal with promotion (determine if the promotion move is valid first?)
-// problem2: how to redisplay of the board after each set_up command (which place to place observers)
-// problem3: try to determine win or lose by checking if the curr status == BlackWin/WhiteWin/Draw (but it says expression has a int type?? same thing happen in status class)
+
 
 // ---------------------------------- helper func start --------------------------------------------
 
@@ -258,7 +256,6 @@ void MainGame::handle_set_up()
 
             if (piece_type == 'K')
             {
-                std::cout << "try to add the king" << std::endl;
                 _game.set_piece(p, Piece::WhiteKing);
             }
             if (piece_type == 'Q')
@@ -348,9 +345,6 @@ void MainGame::handle_move(std::string command)
         _game.regular_init();
         _game.set_status(Result::Unfinished);
     }
-    /*else if (_game.get_status() == Result::Setup) {
-        _game.set_status(Result::Unfinished);
-    }*/
 
     std::cout << command << std::endl;
     std::istringstream iss(command);
