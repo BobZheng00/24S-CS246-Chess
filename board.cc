@@ -17,8 +17,9 @@ void BoardSubject::detach(BoardObserver* o) {
 }
 
 void BoardSubject::notify_observers(std::unique_ptr<std::vector<BoardPosn>> posns, Result res) const {
+    std::shared_ptr<std::vector<BoardPosn>> posns_shared = std::move(posns);
     for (auto obs: observers) {
-        obs->update_board(std::move(posns), res);
+        obs->update_board(posns_shared, res);
     }
 }
 

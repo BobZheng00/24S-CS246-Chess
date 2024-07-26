@@ -126,7 +126,7 @@ BoardPosn& BoardPosn::operator+=(const BoardPosn& other) {
     return *this;
 }
 
-BoardPosn BoardPosn::operator+(const BoardPosn& other) {
+BoardPosn BoardPosn::operator+(const BoardPosn& other) const {
     return {file+other.file, rank+other.rank};
 }
 

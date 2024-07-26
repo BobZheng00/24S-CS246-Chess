@@ -34,7 +34,8 @@ struct BoardPosn {
     BoardPosn(int file, int rank) : file(file), rank(rank) {}
     bool operator==(const BoardPosn& other) const;
     BoardPosn& operator+=(const BoardPosn& other);
-    BoardPosn operator+(const BoardPosn& other);
+    BoardPosn operator+(const BoardPosn& other) const;
+
     bool on_board() const;
     std::string to_string() const;
 
@@ -100,11 +101,9 @@ private:
     std::stack<std::unique_ptr<Move>> moves;
 };
 
-class PossibleMove {
-public:
+struct PossibleMove {
     bool is_possible_move(BoardPosn& from, BoardPosn& to) const;
     void add_move(std::unique_ptr<Move> move);
-// private:
     std::vector<std::unique_ptr<Move>> moves;
 };
 

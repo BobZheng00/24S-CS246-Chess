@@ -1,3 +1,5 @@
+#pragma once
+
 #include "chessgame.h"
 #include "player.h"
 #include <string>

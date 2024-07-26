@@ -139,7 +139,9 @@ bool ChessGame::execute_move(const BoardPosn& from, const BoardPosn& to, std::op
 
     for (auto& move: moves->moves) {
         if (move->to == to) {
+            std::cout << "move found" << std::endl;
             auto promotion_ptr = dynamic_cast<PromotionMove*>(move.get());
+            std::cout << "promotion_ptr: " << promotion_ptr << std::endl;
             if (promotion_ptr) {
                 if (!opt_promotion || opt_promotion.value() == PieceType::King || opt_promotion.value() == PieceType::Pawn) {
                     return false;
@@ -149,10 +151,14 @@ bool ChessGame::execute_move(const BoardPosn& from, const BoardPosn& to, std::op
                 }
             }
             if (_move_factory.will_move_result_check(*move)) return false;
+            std::cout << "move will not result in check" << std::endl;
             move->execute(_board, _status); // player turn has changed
+            std::cout << "move executed" << std::endl;
             // check for checkmate, stalemate, and check
             if (_move_factory.is_in_check(_status.cur_turn)) {
+                std::cout << "in check" << std::endl;
                 if (_move_factory.is_checkmated()) {
+                    std::cout << "checkmated" << std::endl;
                     if (_status.cur_turn == ChessColour::White) {
                         _status.result = Result::BlackWin;
                     } else {
@@ -165,11 +171,13 @@ bool ChessGame::execute_move(const BoardPosn& from, const BoardPosn& to, std::op
                 }
             }
             else if (_move_factory.is_stalemated()) {
+                std::cout << "stalemated" << std::endl;
                 _status.result = Result::Draw;
             }
             else {
                 _status.result = Result::Unfinished;
             }
+            std::cout << "status updated" << std::endl;
             _status.move_history->push_move(std::move(move));
             _board.notify_observers(get_rerendered_posns(_status.move_history->last_move()), _status.result);
             return true;

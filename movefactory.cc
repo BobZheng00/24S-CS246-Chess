@@ -18,6 +18,17 @@ BoardPosn push_n_rank(ChessColour colour, const BoardPosn& posn, int rank) {
     }
 }
 
+bool will_be_attack_by_king(const Board& board, const BoardPosn& posn, ChessColour colour) {
+    if ((posn+BoardPosn{1, 1}).on_board() && board.get_piece(posn+BoardPosn{1, 1}) == Piece{PieceType::King, opposite_colour(colour)}) return true;
+    if ((posn+BoardPosn{-1, 1}).on_board() && board.get_piece(posn+BoardPosn{-1, 1}) == Piece{PieceType::King, opposite_colour(colour)}) return true;
+    if ((posn+BoardPosn{1, -1}).on_board() && board.get_piece(posn+BoardPosn{1, -1}) == Piece{PieceType::King, opposite_colour(colour)}) return true;
+    if ((posn+BoardPosn{-1, -1}).on_board() && board.get_piece(posn+BoardPosn{-1, -1}) == Piece{PieceType::King, opposite_colour(colour)}) return true;
+    if ((posn+BoardPosn{1, 0}).on_board() && board.get_piece(posn+BoardPosn{1, 0}) == Piece{PieceType::King, opposite_colour(colour)}) return true;
+    if ((posn+BoardPosn{-1, 0}).on_board() && board.get_piece(posn+BoardPosn{-1, 0}) == Piece{PieceType::King, opposite_colour(colour)}) return true;
+    if ((posn+BoardPosn{0, 1}).on_board() && board.get_piece(posn+BoardPosn{0, 1}) == Piece{PieceType::King, opposite_colour(colour)}) return true;
+    if ((posn+BoardPosn{0, -1}).on_board() && board.get_piece(posn+BoardPosn{0, -1}) == Piece{PieceType::King, opposite_colour(colour)}) return true;
+}
+
 std::unique_ptr<PossibleMove> MoveFactory::get_moves(const BoardPosn& posn) const {
     if (_board.get_piece(posn) == std::nullopt) return std::make_unique<PossibleMove>();
     switch (_board.get_piece(posn).value().type) {
@@ -43,6 +54,8 @@ bool MoveFactory::is_move_safe(const Move& move) const {
     GameStatus tmp_status = _status;
 
     move.execute(tmp_board, tmp_status);
+
+    if (will_be_attack_by_king(tmp_board, move.to, move.moved_piece.colour)) return false;
 
     MoveFactory tmp_factory{tmp_board, tmp_status};
     auto all_opponent_moves = tmp_factory.get_all_moves(opposite_colour(move.moved_piece.colour));

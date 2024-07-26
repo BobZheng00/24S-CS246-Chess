@@ -13,7 +13,7 @@ TextDisplay::~TextDisplay() {
     _p_board_subj->detach(this);
 }
 
-void TextDisplay::update_board(std::unique_ptr<std::vector<BoardPosn>> b, Result r) const {
+void TextDisplay::update_board(std::shared_ptr<std::vector<BoardPosn>> b, Result r) const {
     for (int rank = 7; rank >= 0; --rank) {
         std::cout << rank + 1 << ' ';
         for (int file = 0; file < 8; ++file) {
@@ -30,7 +30,7 @@ void TextDisplay::update_board(std::unique_ptr<std::vector<BoardPosn>> b, Result
 }
 
 
-GraphicDisplay::GraphicDisplay(BoardSubject* p_board_subj): _window{Xwindow(4000, 4000)}, _p_board_subj{p_board_subj} {
+GraphicDisplay::GraphicDisplay(BoardSubject* p_board_subj): _window{Xwindow(400, 400)}, _p_board_subj{p_board_subj} {
     _p_board_subj->attach(this);
     const int squareSize = 50;
     const int boardSize = 8;
@@ -39,19 +39,18 @@ GraphicDisplay::GraphicDisplay(BoardSubject* p_board_subj): _window{Xwindow(4000
         for (int file = 0; file < boardSize; ++file) {
             bool isWhiteSquare = ((rank + file) % 2 == 0);
             int x = file * squareSize;
-            int y = rank * squareSize;
+            int y = (7-rank) * squareSize;
             if (isWhiteSquare) {
                 _window.fillRectangle(x, y, squareSize, squareSize, Xwindow::White);
             } else {
                 _window.fillRectangle(x, y, squareSize, squareSize, Xwindow::Black);
             }
-            int fontSize = 24;
-            int textX = x + squareSize / 2 - fontSize / 2;
-            int textY = y + squareSize / 2 + fontSize / 2;
-            /*if (_p_board_subj->get_piece(file, rank)) {
+            int textX = x + squareSize / 2;
+            int textY = y + squareSize / 2;
+            if (_p_board_subj->get_piece(file, rank)) {
                 std::string pieceChar = std::string(1, _p_board_subj->get_piece(file, rank).value().to_char());
-                _window.drawString(textX, textY, pieceChar, Xwindow::Blue);
-            }*/
+                _window.drawString(textX, textY, pieceChar, Xwindow::Red);
+            }
         }
     }
 }
@@ -60,7 +59,7 @@ GraphicDisplay::~GraphicDisplay() {
     _p_board_subj->detach(this);
 }
 
-void GraphicDisplay::update_board(std::unique_ptr<std::vector<BoardPosn>> b, Result r) const {
+void GraphicDisplay::update_board(std::shared_ptr<std::vector<BoardPosn>> b, Result r) const {
     const int squareSize = 50;
     const int boardSize = 8;
     for (auto& posn : *b) {
@@ -68,22 +67,17 @@ void GraphicDisplay::update_board(std::unique_ptr<std::vector<BoardPosn>> b, Res
         int rank = posn.rank;
         bool isWhiteSquare = ((rank + file) % 2 == 0);
         int x = file * squareSize;
-        int y = rank * squareSize;
+        int y = (7-rank) * squareSize;
         if (isWhiteSquare) {
             _window.fillRectangle(x, y, squareSize, squareSize, Xwindow::White);
         } else {
             _window.fillRectangle(x, y, squareSize, squareSize, Xwindow::Black);
         }
-        int fontSize = 24;
-        int textX = x + squareSize / 2 - fontSize / 2;
-        int textY = y + squareSize / 2 + fontSize / 2;
-        _window.drawString(textX, textY, "fuck", Xwindow::Blue);
-        /*if (_p_board_subj->get_piece(file, rank)) {
+        if (_p_board_subj->get_piece(file, rank)) {
             std::string pieceChar = std::string(1, _p_board_subj->get_piece(file, rank).value().to_char());
-            int fontSize = 24;
-            int textX = x + squareSize / 2 - fontSize / 2;
-            int textY = y + squareSize / 2 + fontSize / 2;
-            _window.drawString(textX, textY, pieceChar, Xwindow::Blue);
-        }*/
+            int textX = x + squareSize / 2;
+            int textY = y + squareSize / 2;
+            _window.drawString(textX, textY, pieceChar, Xwindow::Red);
+        }
     }
 }

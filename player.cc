@@ -22,6 +22,10 @@ ComputerLv1::ComputerLv1(ChessGame* game) : ComputerPlayer(game) {
 
 RawMove ComputerLv1::get_move() const {
     std::unique_ptr<PossibleMove> possible_moves = game->_move_factory.get_all_moves(game->_status.cur_turn);
+    std::unique_ptr<PossibleMove> possible_king_moves = game->_move_factory.get_moves(game->_board.get_king_posn(game->_status.cur_turn));
+    for (auto& move : possible_king_moves->moves) {
+        possible_moves->add_move(std::move(move));
+    }
     if (possible_moves->moves.empty()) {
         return { BoardPosn::Invalid, BoardPosn::Invalid };
     }
@@ -36,6 +40,10 @@ ComputerLv2::ComputerLv2(ChessGame* game) : ComputerPlayer(game) {
 
 RawMove ComputerLv2::get_move() const {
     std::unique_ptr<PossibleMove> possible_moves = game->_move_factory.get_all_moves(game->_status.cur_turn);
+    std::unique_ptr<PossibleMove> possible_king_moves = game->_move_factory.get_moves(game->_board.get_king_posn(game->_status.cur_turn));
+    for (auto& move : possible_king_moves->moves) {
+        possible_moves->add_move(std::move(move));
+    }
     std::vector<std::unique_ptr<Move>> become_checked_moves;
     std::vector<std::unique_ptr<Move>> capturing_moves;
     std::vector<std::unique_ptr<Move>> other_moves;
@@ -65,6 +73,10 @@ ComputerLv3::ComputerLv3(ChessGame* game) : ComputerPlayer(game) {
 
 RawMove ComputerLv3::get_move() const {
     std::unique_ptr<PossibleMove> possible_moves = game->_move_factory.get_all_moves(game->_status.cur_turn);
+    std::unique_ptr<PossibleMove> possible_king_moves = game->_move_factory.get_moves(game->_board.get_king_posn(game->_status.cur_turn));
+    for (auto& move : possible_king_moves->moves) {
+        possible_moves->add_move(std::move(move));
+    }
     std::vector<std::unique_ptr<Move>> become_checked_moves;
     std::vector<std::unique_ptr<Move>> evading_capture_moves;
     std::vector<std::unique_ptr<Move>> safe_moves;
@@ -106,6 +118,10 @@ ComputerLv4::ComputerLv4(ChessGame* game) : ComputerPlayer(game) {
 
 RawMove ComputerLv4::get_move() const {
     std::unique_ptr<PossibleMove> possible_moves = game->_move_factory.get_all_moves(game->_status.cur_turn);
+    std::unique_ptr<PossibleMove> possible_king_moves = game->_move_factory.get_moves(game->_board.get_king_posn(game->_status.cur_turn));
+    for (auto& move : possible_king_moves->moves) {
+        possible_moves->add_move(std::move(move));
+    }
     std::vector<std::unique_ptr<Move>> become_checked_moves;
     std::vector<std::unique_ptr<Move>> forking_moves;
     std::vector<std::unique_ptr<Move>> valuable_moves;
