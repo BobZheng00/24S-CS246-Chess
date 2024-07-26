@@ -77,7 +77,7 @@ void GraphicDisplay::update_board(std::unique_ptr<std::vector<BoardPosn>> b, Res
             int fontSize = 24;
             int textX = x + squareSize / 2 - fontSize / 2;
             int textY = y + squareSize / 2 + fontSize / 2;
-            _window.drawString(textX, textY, pieceChar);
+            _window.drawString(textX, textY, pieceChar, Xwindow::Blue);
         }
     }
 }
