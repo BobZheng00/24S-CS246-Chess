@@ -35,19 +35,24 @@ ComputerLv2::ComputerLv2(ChessGame* game) : ComputerPlayer(game) {
 }
 
 RawMove ComputerLv2::get_move() const {
+    std::cout << "before we get all moves" << std::endl;
     std::unique_ptr<PossibleMove> possible_moves = game->_move_factory.get_all_moves(game->_status.cur_turn);
+    std::cout << "after we get all moves" << std::endl;
     std::vector<std::unique_ptr<Move>> check_moves;
     std::vector<std::unique_ptr<Move>> capturing_moves;
     std::vector<std::unique_ptr<Move>> other_moves;
+    std::cout << "before we filter" << std::endl;
     for (auto& move : possible_moves->moves) {
         if (game->_move_factory.will_move_result_check(*move)) {
             check_moves.emplace_back(std::move(move));
         } else if (dynamic_cast<CaptureMove*>(move.get())) {
+            std::cout << "while we filter" << std::endl;
             capturing_moves.emplace_back(std::move(move));
         } else {
             other_moves.emplace_back(std::move(move));
         }
     }
+    std::cout << "after we filter" << std::endl;
     if (!check_moves.empty()) {
         int move_index = std::rand() % check_moves.size();
         return check_moves[move_index]->get_raw_move();
