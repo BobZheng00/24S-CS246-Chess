@@ -75,7 +75,7 @@ std::unique_ptr<BasePlayer> create_player(const std::string &playerType, ChessGa
 MainGame::MainGame() : _p1{nullptr}, _p2{nullptr}, _game{}, _text_observer{nullptr}, _graphics_observer{nullptr}, white_score{0}, black_score{0}, currentTurn{"white"}, white_player_type{}, black_player_type{}
 {
     _text_observer = std::make_unique<TextDisplay>(_game.get_board_for_observers());
-    _graphics_observer = std::make_unique<GraphicDisplay>(_game.get_board_for_observers());
+  // _graphics_observer = std::make_unique<GraphicDisplay>(_game.get_board_for_observers());
 }
 
 void MainGame::run()
@@ -139,6 +139,23 @@ void MainGame::run()
 
     print_score();
 }
+
+
+/*void MainGame::reset_game()
+{
+    _game.regular_init(); // Reset the game object
+    _p1.reset();
+    _p2.reset();
+    white_score = 0;
+    black_score = 0;
+    currentTurn = "white";
+    white_player_type.clear();
+    black_player_type.clear();
+
+    // Reinitialize observers if necessary
+    _text_observer = std::make_unique<TextDisplay>(_game.get_board_for_observers());
+    // _graphics_observer = std::make_unique<GraphicDisplay>(_game.get_board_for_observers());
+}*/
 
 void MainGame::handle_player_sign_up(std::string command)
 {
@@ -217,6 +234,7 @@ void MainGame::handle_set_up()
 
             if (piece_type == 'K')
             {
+                std::cout << "try to add the king" << std::endl;
                 _game.set_piece(p, Piece::WhiteKing);
             }
             if (piece_type == 'Q')
@@ -306,6 +324,9 @@ void MainGame::handle_move(std::string command)
         _game.regular_init();
         _game.set_status(Result::Unfinished);
     }
+    /*else if (_game.get_status() == Result::Setup) {
+        _game.set_status(Result::Unfinished);
+    }*/
 
     std::cout << command << std::endl;
     std::istringstream iss(command);
