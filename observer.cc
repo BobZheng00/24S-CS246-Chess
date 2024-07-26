@@ -49,7 +49,7 @@ GraphicDisplay::GraphicDisplay(BoardSubject* p_board_subj): _window{Xwindow(4000
             int textX = x + squareSize / 2 - fontSize / 2;
             int textY = y + squareSize / 2 + fontSize / 2;
             std::string pieceChar = std::string(1, _p_board_subj->get_piece(file, rank).value().to_char());
-            _window.drawString(textX, textY, pieceChar);
+            _window.drawString(textX, textY, pieceChar, Xwindow::Blue);
         }
     }
 }
