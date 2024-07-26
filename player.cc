@@ -26,8 +26,8 @@ RawMove ComputerLv1::get_move() const {
     for (auto& move : possible_king_moves->moves) {
         possible_moves->add_move(std::move(move));
     }
-    std::vector<std::unique_ptr<PossibleMove>> become_checked_moves;
-    std::vector<std::unique_ptr<PossibleMove>> legal_moves;
+    std::vector<std::unique_ptr<Move>> become_checked_moves;
+    std::vector<std::unique_ptr<Move>> legal_moves;
     for (auto& move : possible_moves->moves) {
         if (game->_move_factory.will_move_result_check(*move)) {
             become_checked_moves.emplace_back(std::move(move));
